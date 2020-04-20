@@ -5,6 +5,13 @@
  */
 package com.pfc.inventorytracker.dao;
 
+import com.pfc.inventorytracker.entities.Category;
+import com.pfc.inventorytracker.entities.Item;
+import com.pfc.inventorytracker.entities.Location;
+import com.pfc.inventorytracker.entities.Request;
+import com.pfc.inventorytracker.entities.Role;
+import com.pfc.inventorytracker.entities.User;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +62,30 @@ public class ItemDBTest {
     
     @BeforeEach
     public void setUp() {
+        List<Role> roles = roleDao.getAllRoles();
+        for(Role role : roles){
+            roleDao.deleteRole(role.getId());
+        }
+        List<Category> categories = categoryDao.getAllCategories();
+        for(Category category : categories){
+            categoryDao.deleteCategory(category.getId());
+        }
+        List<Request> requests = requestDao.getAllRequests();
+        for(Request request : requests){
+            requestDao.delteRequest(request.getId());
+        }
+        List<Item> items = itemDao.getAllItems();
+        for(Item item : items){
+            itemDao.deleteItem(item.getId());
+        }
+        List<Location> locations = locationDao.getAllLocations();
+        for(Location location : locations){
+            locationDao.deleteLocation(location.getId());
+        }
+        List<User> users = userDao.getAllUsers();
+        for(User user : users){
+            userDao.deleteUser(user.getUsername());
+        }
     }
     
     @AfterEach
