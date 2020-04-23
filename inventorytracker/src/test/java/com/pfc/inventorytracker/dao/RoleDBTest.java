@@ -136,6 +136,13 @@ public class RoleDBTest {
      */
     @Test
     public void testAddGetRoleById() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        
+        Role fromDao = roleDao.getRoleById(role.getId());
+        
+        assertEquals(role, fromDao);
     }
 
     /**
@@ -143,6 +150,20 @@ public class RoleDBTest {
      */
     @Test
     public void testUpdateRole() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        
+        Role fromDao = roleDao.getRoleById(role.getId());
+        assertEquals(role, fromDao);
+        
+        role.setRole("ROLE_ANOTHER");
+        roleDao.updateRole(role);
+        assertNotEquals(role, fromDao);
+        
+        fromDao = roleDao.getRoleById(role.getId());
+        
+        assertEquals(role, fromDao);
     }
 
     /**
@@ -150,6 +171,23 @@ public class RoleDBTest {
      */
     @Test
     public void testDeleteRole() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        
+        User user = new User();
+        user.setUsername("test username");
+        user.setPassword("test password");
+        user.setEnabled(true);
+        user.setRoles(roles);        
+        user = userDao.addUser(user);
+        
+        roleDao.deleteRole(role.getId());
+        Role fromDao = roleDao.getRoleById(role.getId());
+        assertNull(fromDao);
     }
     
 }

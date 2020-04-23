@@ -17,6 +17,7 @@ public class Location {
     private String name;
     private String description;
     private User user;
+    private List<Request> requests;
     private List<Item> items;
 
     public int getId() {
@@ -51,6 +52,16 @@ public class Location {
         this.user = user;
     }
 
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
+    
+    
+
     public List<Item> getItems() {
         return items;
     }
@@ -66,6 +77,7 @@ public class Location {
         hash = 83 * hash + Objects.hashCode(this.name);
         hash = 83 * hash + Objects.hashCode(this.description);
         hash = 83 * hash + Objects.hashCode(this.user);
+        hash = 83 * hash + Objects.hashCode(this.requests);
         hash = 83 * hash + Objects.hashCode(this.items);
         return hash;
     }
@@ -92,6 +104,9 @@ public class Location {
             return false;
         }
         if (!Objects.equals(this.user, other.user)) {
+            return false;
+        }
+        if (!Objects.equals(this.requests, other.requests)) {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {

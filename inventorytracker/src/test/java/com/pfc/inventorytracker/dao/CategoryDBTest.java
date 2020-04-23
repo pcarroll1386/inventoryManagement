@@ -11,7 +11,11 @@ import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,27 +71,27 @@ public class CategoryDBTest {
     @BeforeEach
     public void setUp() {
         List<Role> roles = roleDao.getAllRoles();
-        for(Role role : roles){
+        for (Role role : roles) {
             roleDao.deleteRole(role.getId());
         }
         List<Category> categories = categoryDao.getAllCategories();
-        for(Category category : categories){
+        for (Category category : categories) {
             categoryDao.deleteCategory(category.getId());
         }
         List<Request> requests = requestDao.getAllRequests();
-        for(Request request : requests){
+        for (Request request : requests) {
             requestDao.delteRequest(request.getId());
         }
         List<Item> items = itemDao.getAllItems();
-        for(Item item : items){
+        for (Item item : items) {
             itemDao.deleteItem(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
-        for(Location location : locations){
+        for (Location location : locations) {
             locationDao.deleteLocation(location.getId());
         }
         List<User> users = userDao.getAllUsers();
-        for(User user : users){
+        for (User user : users) {
             userDao.deleteUser(user.getUsername());
         }
     }
@@ -101,20 +105,114 @@ public class CategoryDBTest {
      */
     @Test
     public void testGetAllCategories() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = new User();
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user = userDao.addUser(user);
+
+        Category category = new Category();
+        category.setName("test name");
+        category = categoryDao.addCategory(category);
+
+        Category category2 = new Category();
+        category2.setName("Test name 2");
+        category2 = categoryDao.addCategory(category2);
+
+        Category category3 = new Category();
+        category3.setName("Test name 3");
+        category3 = categoryDao.addCategory(category3);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+        categories.add(category2);
+        categories.add(category3);
+
+        Item item = new Item();
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test locatin description");
+        location.setUser(user);
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+
+        List<Category> fromDao = categoryDao.getAllCategories();
+
+        assertEquals(3, fromDao.size());
+        assertTrue(fromDao.contains(category));
+        assertTrue(fromDao.contains(category2));
+        assertTrue(fromDao.contains(category3));
+
     }
 
     /**
-     * Test of getCategoryById method, of class CategoryDB.
+     * Test of addCategory method & getCategoryById method, of class CategoryDB.
      */
     @Test
-    public void testGetCategoryById() {
-    }
+    public void testAddGetCategoryById() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
 
-    /**
-     * Test of addCategory method, of class CategoryDB.
-     */
-    @Test
-    public void testAddCategory() {
+        User user = new User();
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user = userDao.addUser(user);
+
+        Category category = new Category();
+        category.setName("Test name");
+        category = categoryDao.addCategory(category);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+
+        Item item = new Item();
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test locatin description");
+        location.setUser(user);
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+
+        Category fromDao = categoryDao.getCategoryById(category.getId());
+
+        assertEquals(category, fromDao);
+
     }
 
     /**
@@ -122,6 +220,57 @@ public class CategoryDBTest {
      */
     @Test
     public void testUpdateCategory() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        User user = new User();
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user = userDao.addUser(user);
+
+        Category category = new Category();
+        category.setName("Test name");
+        category = categoryDao.addCategory(category);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+
+        Item item = new Item();
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test locatin description");
+        location.setUser(user);
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+
+        Category fromDao = categoryDao.getCategoryById(category.getId());
+        assertEquals(category, fromDao);
+
+        category.setName("Antoher test Name");
+        categoryDao.updateCategory(category);
+
+        assertNotEquals(category, fromDao);
+
+        fromDao = categoryDao.getCategoryById(category.getId());
+
+        assertEquals(category, fromDao);
     }
 
     /**
@@ -129,6 +278,54 @@ public class CategoryDBTest {
      */
     @Test
     public void testDeleteCategory() {
+         Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        
+        User user = new User();
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user = userDao.addUser(user);
+        
+        Category category = new Category();
+        category.setName("Test name");
+        category = categoryDao.addCategory(category);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+        
+        Item item = new Item();
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+        
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test locatin description");
+        location.setUser(user);
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+        
+        Category fromDao = categoryDao.getCategoryById(category.getId());        
+        assertEquals(category, fromDao);
+        
+        categoryDao.deleteCategory(category.getId());
+        fromDao = categoryDao.getCategoryById(category.getId());
+        
+        assertNull(fromDao);
+        
     }
 
 }
