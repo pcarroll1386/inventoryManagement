@@ -22,7 +22,5 @@ public interface ItemDao {
     Item getItemById(int id);
     void updateItem(Item item);
     void deleteItem(int id);
-    List<Item> getAllItemsForLocation(Location location);
     List<Item> getAllItemsByCategory(Category category);
-    List<Item> getAllItemsByRequest(Request request);
 }

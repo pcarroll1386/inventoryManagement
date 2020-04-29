@@ -19,7 +19,6 @@ public interface RequestDao {
     Request getRequestById(int id);
     Request addRequest(Request request);
     void updateRequest(Request request);
-    void delteRequest(int id);
-    List<Request> getAllRequestsByLocation(Location location);
+    void deleteRequest(int id);
     List<Request> getAllRequestsByUser(User user);
 }

@@ -12,6 +12,7 @@ import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,7 +81,7 @@ public class RequestDBTest {
         }
         List<Request> requests = requestDao.getAllRequests();
         for(Request request : requests){
-            requestDao.delteRequest(request.getId());
+            requestDao.deleteRequest(request.getId());
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
@@ -139,17 +140,20 @@ public class RequestDBTest {
         items.add(item);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         
         Request request2 = new Request();
-        request2.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request2.setItems(items);
         request2 = requestDao.addRequest(request2);
         
         Request request3 = new Request();
-        request3.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request3.setItems(items);
         request3 = requestDao.addRequest(request3);
         List<Request> requests = new ArrayList<>();
@@ -213,7 +217,8 @@ public class RequestDBTest {
         items.add(item);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -292,7 +297,8 @@ public class RequestDBTest {
         
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -309,7 +315,7 @@ public class RequestDBTest {
         Request fromDao = requestDao.getRequestById(request.getId());        
         assertEquals(request, fromDao);
         
-        request.setUser(user2);
+        request.setLocation(location);
         request.setItems(newItems);
         requestDao.updateRequest(request);
         assertNotEquals(request, fromDao);
@@ -358,7 +364,8 @@ public class RequestDBTest {
         items.add(item);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -375,82 +382,10 @@ public class RequestDBTest {
         Request fromDao = requestDao.getRequestById(request.getId());        
         assertEquals(request, fromDao);
         
-        requestDao.delteRequest(request.getId());
+        requestDao.deleteRequest(request.getId());
         fromDao = requestDao.getRequestById(request.getId());
         
         assertNull(fromDao);
-    }
-
-    /**
-     * Test of getAllRequestsByLocation method, of class RequestDB.
-     */
-    @Test
-    public void testGetAllRequestsByLocation() {
-        Role role = new Role();
-        role.setRole("ROLE_TEST");
-        role = roleDao.addRole(role);
-        Set<Role> roles = new HashSet<>();
-        roles.add(role);
-        
-        User user = new User();
-        user.setUsername("testUsername");
-        user.setPassword("testPassword");
-        user.setEnabled(true);
-        user.setRoles(roles);
-        user = userDao.addUser(user);
-        
-        Category category = new Category();
-        category.setName("Test Category");
-        category = categoryDao.addCategory(category);
-        Set<Category> categories = new HashSet<>();
-        categories.add(category);
-        
-        Item item = new Item();
-        item.setName("test itemName");
-        item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
-        item.setNickname("test nickName");
-        item.setPrice(new BigDecimal("25.95"));
-        item.setCategories(categories);
-        item = itemDao.addItem(item);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        
-        Request request = new Request();
-        request.setSubmitted(false);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        
-        Request request2 = new Request();
-        request2.setSubmitted(false);
-        request2.setItems(items);
-        request2 = requestDao.addRequest(request2);
-        
-        Request request3 = new Request();
-        request3.setSubmitted(false);
-        request3.setItems(items);
-        request3 = requestDao.addRequest(request3);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        requests.add(request2);
-        
-        Location location = new Location();
-        location.setName("test location name");
-        location.setDescription("test locatin description");
-        location.setUser(user);
-        location.setItems(items);
-        location.setRequests(requests);
-        location = locationDao.addLocation(location);
-        
-        List<Request> fromDao = requestDao.getAllRequestsByLocation(location);
-        
-        assertEquals(2, fromDao.size());
-        assertTrue(fromDao.contains(request));
-        assertTrue(fromDao.contains(request2));
-        assertFalse(fromDao.contains(request3));
     }
 
     /**
@@ -498,12 +433,14 @@ public class RequestDBTest {
         items.add(item);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         
         Request request2 = new Request();
-        request2.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request2.setItems(items);
         request2 = requestDao.addRequest(request2);
         List<Request> requests = new ArrayList<>();
@@ -511,14 +448,16 @@ public class RequestDBTest {
         requests.add(request2);
         
         Request request3 = new Request();
-        request3.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request3.setItems(items);
         request3 = requestDao.addRequest(request3);
         List<Request> requests2 = new ArrayList<>();
         requests.add(request3);
         
         Request request4 = new Request();
-        request4.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request4.setItems(items);
         request4 = requestDao.addRequest(request4);
         List<Request> requests3 = new ArrayList<>();

@@ -5,6 +5,7 @@
  */
 package com.pfc.inventorytracker.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,8 +15,9 @@ import java.util.Objects;
  */
 public class Request {
     private int id;
-    private boolean submitted;
-    private User user;
+    private LocalDateTime requestDate;
+    private int status;
+    private Location location;
     private List<Item> items;
 
     public int getId() {
@@ -26,20 +28,28 @@ public class Request {
         this.id = id;
     }
 
-    public boolean isSubmitted() {
-        return submitted;
+    public LocalDateTime getRequestDate() {
+        return requestDate;
     }
 
-    public void setSubmitted(boolean submitted) {
-        this.submitted = submitted;
+    public void setRequestDate(LocalDateTime requestDate) {
+        this.requestDate = requestDate;
     }
 
-    public User getUser() {
-        return user;
+    public int getStatus() {
+        return status;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public List<Item> getItems() {
@@ -52,11 +62,12 @@ public class Request {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + this.id;
-        hash = 41 * hash + (this.submitted ? 1 : 0);
-        hash = 41 * hash + Objects.hashCode(this.user);
-        hash = 41 * hash + Objects.hashCode(this.items);
+        int hash = 3;
+        hash = 13 * hash + this.id;
+        hash = 13 * hash + Objects.hashCode(this.requestDate);
+        hash = 13 * hash + this.status;
+        hash = 13 * hash + Objects.hashCode(this.location);
+        hash = 13 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -75,10 +86,13 @@ public class Request {
         if (this.id != other.id) {
             return false;
         }
-        if (this.submitted != other.submitted) {
+        if (this.status != other.status) {
             return false;
         }
-        if (!Objects.equals(this.user, other.user)) {
+        if (!Objects.equals(this.requestDate, other.requestDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.location, other.location)) {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {

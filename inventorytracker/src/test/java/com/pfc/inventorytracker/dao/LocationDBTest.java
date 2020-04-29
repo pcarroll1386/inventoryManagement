@@ -12,6 +12,7 @@ import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,7 +81,7 @@ public class LocationDBTest {
         }
         List<Request> requests = requestDao.getAllRequests();
         for(Request request : requests){
-            requestDao.delteRequest(request.getId());
+            requestDao.deleteRequest(request.getId());
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
@@ -166,7 +167,8 @@ public class LocationDBTest {
         items.add(item3);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -270,7 +272,8 @@ public class LocationDBTest {
         items.add(item3);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -353,7 +356,8 @@ public class LocationDBTest {
         items.add(item2);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -447,7 +451,8 @@ public class LocationDBTest {
         items.add(item2);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();
@@ -543,7 +548,8 @@ public class LocationDBTest {
         items.add(item3);
         
         Request request = new Request();
-        request.setSubmitted(false);
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
         request.setItems(items);
         request = requestDao.addRequest(request);
         List<Request> requests = new ArrayList<>();

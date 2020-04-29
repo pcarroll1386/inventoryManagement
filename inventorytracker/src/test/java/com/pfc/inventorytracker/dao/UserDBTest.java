@@ -80,7 +80,7 @@ public class UserDBTest {
         }
         List<Request> requests = requestDao.getAllRequests();
         for(Request request : requests){
-            requestDao.delteRequest(request.getId());
+            requestDao.deleteRequest(request.getId());
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){

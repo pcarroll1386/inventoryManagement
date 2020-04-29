@@ -30,14 +30,10 @@ create table location(
     
 create table request(
 	id int primary key auto_increment,
-    sent boolean not null default 0
+    requestDate datetime not null,
+    `status` int not null default 0,
+    locationId int not null
     );
-
-create table location_request(
-		locationId int not null,
-        requestId int not null,
-        primary key(locationId, requestId)
-        );
 
 create table item(
 	id int primary key auto_increment,
@@ -81,9 +77,8 @@ alter table user_role
 	add constraint foreign key (username) references `user`(username),
 	add constraint foreign key (roleId) references `role`(id);
     
-alter table location_request
-	add constraint foreign key (locationId) references location(id),
-	add constraint foreign key (requestId) references request(id);
+alter table request
+	add constraint foreign key (locationId) references location(id);
     
 alter table location_item
 	add constraint foreign key (locationId) references location(id),

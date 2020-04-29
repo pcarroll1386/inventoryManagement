@@ -5,52 +5,133 @@
  */
 package com.pfc.inventorytracker.dao;
 
+import com.pfc.inventorytracker.dao.ItemDB.ItemMapper;
+import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
+import com.pfc.inventorytracker.entities.Item;
 import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.User;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author pfcar
  */
 @Repository
-public class RequestDB implements RequestDao{
+public class RequestDB implements RequestDao {
+
+    @Autowired
+    JdbcTemplate jdbc;
 
     @Override
     public List<Request> getAllRequests() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Request> requests = jdbc.query("SELECT * FROM request", new RequestMapper());
+        requests = addItemsAndLocationForRequests(requests);
+        return requests;
     }
 
     @Override
     public Request getRequestById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            Request request = jdbc.queryForObject("SELECT * FROM request WHERE id = ?", new RequestMapper(), id);
+            request.setLocation(getLocationForRequest(request));
+            request.setItems(getItemsForRequest(request));
+            return request;
+        } catch (DataAccessException ex) {
+            return null;
+        }
     }
 
     @Override
+    @Transactional
     public Request addRequest(Request request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        jdbc.update("INSERT INTO request(requestDate, status, locationId) VALUES(?,?,?)",
+                request.getRequestDate(),
+                request.getStatus(),
+                request.getLocation().getId());
+        int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        insertRequestItems(request);
+        return request;
     }
 
     @Override
+    @Transactional
     public void updateRequest(Request request) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        jdbc.update("UPDATE request SET requestDate = ?, status = ?, locationId = ? WHERE  id = ?",
+                request.getRequestDate(),
+                request.getStatus(),
+                request.getLocation().getId(),
+                request.getId());
+        jdbc.update("DELETE FROM request_item WHERE requestId = ?",
+                request.getId());
+        insertRequestItems(request);
     }
 
     @Override
-    public void delteRequest(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<Request> getAllRequestsByLocation(Location location) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    @Transactional
+    public void deleteRequest(int id) {
+        jdbc.update("DELETE FROM request_item WHERE requestId = ?", id);
+        jdbc.update("DELETE FROM request WHERE id = ?", id);
     }
 
     @Override
     public List<Request> getAllRequestsByUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Request> requests = jdbc.query("SELECT r.* FROM request r "
+                + "JOIN location l ON r.locationId = l.id WHERE username = ?", new RequestMapper(), user.getUsername());
+        requests = addItemsAndLocationForRequests(requests);
+        return requests;
     }
-    
+
+    private List<Request> addItemsAndLocationForRequests(List<Request> requests) {
+        for (Request request : requests) {
+            request.setLocation(getLocationForRequest(request));
+            request.setItems(getItemsForRequest(request));
+        }
+        return requests;
+    }
+
+    private Location getLocationForRequest(Request request) {
+        return jdbc.queryForObject("SELECT l.* FROM location l "
+                + "JOIN request r ON l.id = r.locationId WHERE r.id = ?",
+                new LocationMapper(),
+                request.getId());
+    }
+
+    private List<Item> getItemsForRequest(Request request) {
+        return jdbc.query("SELECT i.*, ri.quantity FROM item i "
+                + "JOIN request_item ri ON i.id = ri.itemId WHERE ri.requestId = ?",
+                new ItemMapper(),
+                request.getId());
+    }
+
+    private void insertRequestItems(Request request) {
+        for(Item item : request.getItems()){
+        jdbc.update("INSERT INTO request_item(requestId, itemId, quantity) VALUES (?,?,?)",
+                request.getId(),
+                item.getId(),
+                item.getQuantity());
+        }
+    }
+
+    public static final class RequestMapper implements RowMapper<Request> {
+
+        @Override
+        public Request mapRow(ResultSet rs, int arg1) throws SQLException {
+            Request r = new Request();
+            r.setId(rs.getInt("id"));
+            r.setRequestDate(rs.getTimestamp("requestDate").toLocalDateTime());
+            r.setStatus(rs.getInt("status"));
+            return r;
+        }
+
+    }
+
 }
