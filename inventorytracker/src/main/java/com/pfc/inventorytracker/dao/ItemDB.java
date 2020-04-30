@@ -83,6 +83,8 @@ public class ItemDB implements ItemDao {
     @Transactional
     public void deleteItem(int id) {
         jdbc.update("DELETE FROM item_category WHERE itemId = ?", id);
+        jdbc.update("DELETE FROM location_item WHERE itemId = ?", id);
+        jdbc.update("DELETE FROM request_item WHERE itemId = ?", id);
         jdbc.update("DELETE FROM item WHERE id=?", id);
                 
     }
@@ -131,9 +133,39 @@ public class ItemDB implements ItemDao {
             i.setDescription("description");
             i.setNickname("nickname");
             i.setPrice(rs.getBigDecimal("price"));
+            return i;
+        }
+
+    }
+    
+    public static final class LocationItemMapper implements RowMapper<Item> {
+
+        @Override
+        public Item mapRow(ResultSet rs, int arg1) throws SQLException {
+            Item i = new Item();
+            i.setId(rs.getInt("id"));
+            i.setName(rs.getString("name"));
+            i.setDescription("description");
+            i.setNickname("nickname");
+            i.setPrice(rs.getBigDecimal("price"));
             i.setInInventory(rs.getInt("inInventory"));
             i.setMax(rs.getInt("max"));
             i.setMin(rs.getInt("min"));
+            return i;
+        }
+
+    }
+    
+    public static final class RequestItemMapper implements RowMapper<Item> {
+
+        @Override
+        public Item mapRow(ResultSet rs, int arg1) throws SQLException {
+            Item i = new Item();
+            i.setId(rs.getInt("id"));
+            i.setName(rs.getString("name"));
+            i.setDescription("description");
+            i.setNickname("nickname");
+            i.setPrice(rs.getBigDecimal("price"));
             i.setQuantity(rs.getInt("quantity"));
             return i;
         }

@@ -5,7 +5,7 @@
  */
 package com.pfc.inventorytracker.dao;
 
-import com.pfc.inventorytracker.dao.ItemDB.ItemMapper;
+import com.pfc.inventorytracker.dao.ItemDB.RequestItemMapper;
 import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
 import com.pfc.inventorytracker.entities.Item;
 import com.pfc.inventorytracker.entities.Location;
@@ -34,7 +34,7 @@ public class RequestDB implements RequestDao {
     @Override
     public List<Request> getAllRequests() {
         List<Request> requests = jdbc.query("SELECT * FROM request", new RequestMapper());
-        requests = addItemsAndLocationForRequests(requests);
+        requests = addItemsForRequests(requests);
         return requests;
     }
 
@@ -42,7 +42,6 @@ public class RequestDB implements RequestDao {
     public Request getRequestById(int id) {
         try {
             Request request = jdbc.queryForObject("SELECT * FROM request WHERE id = ?", new RequestMapper(), id);
-            request.setLocation(getLocationForRequest(request));
             request.setItems(getItemsForRequest(request));
             return request;
         } catch (DataAccessException ex) {
@@ -56,8 +55,9 @@ public class RequestDB implements RequestDao {
         jdbc.update("INSERT INTO request(requestDate, status, locationId) VALUES(?,?,?)",
                 request.getRequestDate(),
                 request.getStatus(),
-                request.getLocation().getId());
+                request.getLocationId());
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        request.setId(newId);
         insertRequestItems(request);
         return request;
     }
@@ -68,7 +68,7 @@ public class RequestDB implements RequestDao {
         jdbc.update("UPDATE request SET requestDate = ?, status = ?, locationId = ? WHERE  id = ?",
                 request.getRequestDate(),
                 request.getStatus(),
-                request.getLocation().getId(),
+                request.getLocationId(),
                 request.getId());
         jdbc.update("DELETE FROM request_item WHERE requestId = ?",
                 request.getId());
@@ -86,29 +86,21 @@ public class RequestDB implements RequestDao {
     public List<Request> getAllRequestsByUser(User user) {
         List<Request> requests = jdbc.query("SELECT r.* FROM request r "
                 + "JOIN location l ON r.locationId = l.id WHERE username = ?", new RequestMapper(), user.getUsername());
-        requests = addItemsAndLocationForRequests(requests);
+        requests = addItemsForRequests(requests);
         return requests;
     }
 
-    private List<Request> addItemsAndLocationForRequests(List<Request> requests) {
+    private List<Request> addItemsForRequests(List<Request> requests) {
         for (Request request : requests) {
-            request.setLocation(getLocationForRequest(request));
             request.setItems(getItemsForRequest(request));
         }
         return requests;
     }
 
-    private Location getLocationForRequest(Request request) {
-        return jdbc.queryForObject("SELECT l.* FROM location l "
-                + "JOIN request r ON l.id = r.locationId WHERE r.id = ?",
-                new LocationMapper(),
-                request.getId());
-    }
-
     private List<Item> getItemsForRequest(Request request) {
         return jdbc.query("SELECT i.*, ri.quantity FROM item i "
                 + "JOIN request_item ri ON i.id = ri.itemId WHERE ri.requestId = ?",
-                new ItemMapper(),
+                new RequestItemMapper(),
                 request.getId());
     }
 
@@ -129,6 +121,7 @@ public class RequestDB implements RequestDao {
             r.setId(rs.getInt("id"));
             r.setRequestDate(rs.getTimestamp("requestDate").toLocalDateTime());
             r.setStatus(rs.getInt("status"));
+            r.setLocationId(rs.getInt("locationId"));
             return r;
         }
 

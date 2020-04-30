@@ -16,16 +16,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.After;
+import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,65 +37,65 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CategoryDBTest {
-
+    
     @Autowired
     CategoryDao categoryDao;
-
+    
     @Autowired
     ItemDao itemDao;
-
+    
     @Autowired
     LocationDao locationDao;
-
+    
     @Autowired
     RequestDao requestDao;
-
+    
     @Autowired
     RoleDao roleDao;
-
+    
     @Autowired
     UserDao userDao;
-
+    
     public CategoryDBTest() {
     }
-
-    @BeforeAll
+    
+    @BeforeClass
     public static void setUpClass() {
     }
-
-    @AfterAll
+    
+    @AfterClass
     public static void tearDownClass() {
     }
-
-    @BeforeEach
+    
+    @Before
     public void setUp() {
-        List<Role> roles = roleDao.getAllRoles();
-        for (Role role : roles) {
-            roleDao.deleteRole(role.getId());
-        }
         List<Category> categories = categoryDao.getAllCategories();
-        for (Category category : categories) {
+        for(Category category : categories){
             categoryDao.deleteCategory(category.getId());
         }
-        List<Request> requests = requestDao.getAllRequests();
-        for (Request request : requests) {
-            requestDao.deleteRequest(request.getId());
-        }
         List<Item> items = itemDao.getAllItems();
-        for (Item item : items) {
+        for(Item item : items){
             itemDao.deleteItem(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
-        for (Location location : locations) {
+        for(Location location : locations){
             locationDao.deleteLocation(location.getId());
         }
+        List<Request> requests = requestDao.getAllRequests();
+        for(Request request : requests){
+            requestDao.deleteRequest(request.getId());
+        }
+        List<Role> roles = roleDao.getAllRoles();
+        for(Role role : roles){
+            roleDao.deleteRole(role.getId());
+        }
         List<User> users = userDao.getAllUsers();
-        for (User user : users) {
+        for(User user : users){
             userDao.deleteUser(user.getUsername());
         }
     }
-
-    @AfterEach
+    
+    @After
     public void tearDown() {
     }
 
@@ -326,6 +325,6 @@ public class CategoryDBTest {
         
         assertNull(fromDao);
         
-    }
-
+    }   
+    
 }

@@ -12,7 +12,7 @@ create table user(
     
 create table `role`(
 	id int primary key auto_increment,
-    `name` varchar(50)
+    `role` varchar(50)
     );
 
 create table user_role(

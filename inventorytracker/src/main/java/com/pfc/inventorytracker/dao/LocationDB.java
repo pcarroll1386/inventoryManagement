@@ -6,6 +6,8 @@
 package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.dao.ItemDB.ItemMapper;
+import com.pfc.inventorytracker.dao.ItemDB.LocationItemMapper;
+import com.pfc.inventorytracker.dao.ItemDB.RequestItemMapper;
 import com.pfc.inventorytracker.dao.RequestDB.RequestMapper;
 import com.pfc.inventorytracker.dao.UserDB.UserMapper;
 import com.pfc.inventorytracker.entities.Item;
@@ -60,6 +62,7 @@ public class LocationDB implements LocationDao {
                 location.getDescription(),
                 location.getUser().getUsername());
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+        location.setId(newId);
         insertLocationItems(location);
         return location;
     }
@@ -103,7 +106,7 @@ public class LocationDB implements LocationDao {
     private List<Item> getItemsForLocation(Location location) {
         List<Item> items = jdbc.query("SELECT i.*, li.inInventory, li.max, li.min FROM item i "
                 + "JOIN location_item li ON i.id = li.itemId WHERE li.locationId = ?",
-                new ItemMapper(),
+                new LocationItemMapper(),
                 location.getId());
         return items;
     }
@@ -117,7 +120,7 @@ public class LocationDB implements LocationDao {
     }
 
     private List<Request> getRequestsForLocation(Location location) {
-        List<Request> requests = jdbc.query("SELECT * FROM requests WHERE locationId = ?",
+        List<Request> requests = jdbc.query("SELECT * FROM request WHERE locationId = ?",
                 new RequestMapper(),
                 location.getId());
         requests = getItemsForRequest(requests);
@@ -126,8 +129,8 @@ public class LocationDB implements LocationDao {
 
     private List<Request> getItemsForRequest(List<Request> requests) {
         for (Request r : requests) {
-            List<Item> items = jdbc.query("SELECT i.*, ri.quantity FROM item i,"
-                    + "JOIN request_item ri ON i.id = ri.itemId WHERE requestId =?", new ItemMapper(), r.getId());
+            List<Item> items = jdbc.query("SELECT i.*, ri.quantity FROM item i "
+                    + "JOIN request_item ri ON i.id = ri.itemId WHERE requestId =?", new RequestItemMapper(), r.getId());
         }
         return requests;
     }

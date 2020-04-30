@@ -17,7 +17,7 @@ public class Request {
     private int id;
     private LocalDateTime requestDate;
     private int status;
-    private Location location;
+    private int locationId;
     private List<Item> items;
 
     public int getId() {
@@ -44,12 +44,12 @@ public class Request {
         this.status = status;
     }
 
-    public Location getLocation() {
-        return location;
+    public int getLocationId() {
+        return locationId;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 
     public List<Item> getItems() {
@@ -63,11 +63,11 @@ public class Request {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 13 * hash + this.id;
-        hash = 13 * hash + Objects.hashCode(this.requestDate);
-        hash = 13 * hash + this.status;
-        hash = 13 * hash + Objects.hashCode(this.location);
-        hash = 13 * hash + Objects.hashCode(this.items);
+        hash = 97 * hash + this.id;
+        hash = 97 * hash + Objects.hashCode(this.requestDate);
+        hash = 97 * hash + this.status;
+        hash = 97 * hash + this.locationId;
+        hash = 97 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -89,10 +89,10 @@ public class Request {
         if (this.status != other.status) {
             return false;
         }
-        if (!Objects.equals(this.requestDate, other.requestDate)) {
+        if (this.locationId != other.locationId) {
             return false;
         }
-        if (!Objects.equals(this.location, other.location)) {
+        if (!Objects.equals(this.requestDate, other.requestDate)) {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {

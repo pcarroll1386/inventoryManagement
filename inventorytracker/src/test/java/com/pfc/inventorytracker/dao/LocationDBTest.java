@@ -17,20 +17,22 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.After;
+import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+
 
 /**
  *
@@ -58,30 +60,19 @@ public class LocationDBTest {
     @Autowired
     UserDao userDao;
     
-    public LocationDBTest() {
-    }
-    
-    @BeforeAll
+    @BeforeClass
     public static void setUpClass() {
     }
     
-    @AfterAll
+    @AfterClass
     public static void tearDownClass() {
     }
     
-    @BeforeEach
+    @Before
     public void setUp() {
-        List<Role> roles = roleDao.getAllRoles();
-        for(Role role : roles){
-            roleDao.deleteRole(role.getId());
-        }
         List<Category> categories = categoryDao.getAllCategories();
         for(Category category : categories){
             categoryDao.deleteCategory(category.getId());
-        }
-        List<Request> requests = requestDao.getAllRequests();
-        for(Request request : requests){
-            requestDao.deleteRequest(request.getId());
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
@@ -91,17 +82,25 @@ public class LocationDBTest {
         for(Location location : locations){
             locationDao.deleteLocation(location.getId());
         }
+        List<Request> requests = requestDao.getAllRequests();
+        for(Request request : requests){
+            requestDao.deleteRequest(request.getId());
+        }
+        List<Role> roles = roleDao.getAllRoles();
+        for(Role role : roles){
+            roleDao.deleteRole(role.getId());
+        }
         List<User> users = userDao.getAllUsers();
         for(User user : users){
             userDao.deleteUser(user.getUsername());
         }
     }
     
-    @AfterEach
+    @After
     public void tearDown() {
     }
 
-    /**
+           /**
      * Test of getAllLocations method, of class LocationDB.
      */
     @Test
@@ -166,20 +165,11 @@ public class LocationDBTest {
         items.add(item2);
         items.add(item3);
         
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
         
         Location location2 = new Location();
@@ -187,7 +177,6 @@ public class LocationDBTest {
         location2.setDescription("test locatin2 description");
         location2.setUser(user);
         location2.setItems(items);
-        location2.setRequests(requests);
         location2 = locationDao.addLocation(location2);
         
         Location location3 = new Location();
@@ -195,8 +184,38 @@ public class LocationDBTest {
         location3.setDescription("test locatin3 description");
         location3.setUser(user);
         location3.setItems(items);
-        location3.setRequests(requests);
-        location3 = locationDao.addLocation(location3);
+        location3 = locationDao.addLocation(location3);        
+       
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setItems(items);
+        request.setLocationId(location.getId());
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+        
+        Request request2 = new Request();
+        request2.setRequestDate(LocalDateTime.now());
+        request2.setStatus(1);
+        request2.setItems(items);
+        request2.setLocationId(location2.getId());
+        request2 = requestDao.addRequest(request2);
+        List<Request> requests2 = new ArrayList<>();
+        requests.add(request2);
+        
+        Request request3 = new Request();
+        request3.setRequestDate(LocalDateTime.now());
+        request3.setStatus(1);
+        request3.setItems(items);
+        request3.setLocationId(location3.getId());
+        request3 = requestDao.addRequest(request3);
+        List<Request> requests3 = new ArrayList<>();
+        requests.add(request3);
+        
+        location.setRequests(requests);
+        location2.setRequests(requests2);
+        location3.setRequests(requests3);
         
         List<Location> fromDao = locationDao.getAllLocations();
         
@@ -271,21 +290,23 @@ public class LocationDBTest {
         items.add(item2);
         items.add(item3);
         
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
+        
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setItems(items);
+        request.setLocationId(location.getId());
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+        
+        location.setRequests(requests);
         
         Location fromDao = locationDao.getLocationById(location.getId());
         assertEquals(location, fromDao);
@@ -355,22 +376,23 @@ public class LocationDBTest {
         items.add(item);
         items.add(item2);
         
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
         
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setItems(items);
+        request.setLocationId(location.getId());
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+        
+        location.setRequests(requests);
         Location fromDao = locationDao.getLocationById(location.getId());
         assertEquals(location, fromDao);
         
@@ -450,22 +472,23 @@ public class LocationDBTest {
         items.add(item);
         items.add(item2);
         
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
         
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setItems(items);
+        request.setLocationId(location.getId());
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+        
+        location.setRequests(requests);
         Location fromDao = locationDao.getLocationById(location.getId());
         assertEquals(location, fromDao);
         
@@ -495,10 +518,11 @@ public class LocationDBTest {
         user = userDao.addUser(user);
         
         User user2 = new User();
-        user.setUsername("test username2");
-        user.setPassword("test password2");
-        user.setEnabled(false);
-        user.setRoles(roles);
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
         
         Category category = new Category();
         category.setName("Test Category");
@@ -540,27 +564,18 @@ public class LocationDBTest {
         item3.setNickname("test nickName3");
         item3.setPrice(new BigDecimal("25.95"));
         item3.setCategories(categories);
-        item3 = itemDao.addItem(item3);  
+        item3 = itemDao.addItem(item3); 
         
         List<Item> items = new ArrayList<>();
         items.add(item);
         items.add(item2);
         items.add(item3);
         
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-        
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
         
         Location location2 = new Location();
@@ -568,17 +583,45 @@ public class LocationDBTest {
         location2.setDescription("test locatin2 description");
         location2.setUser(user);
         location2.setItems(items);
-        location2.setRequests(requests);
         location2 = locationDao.addLocation(location2);
         
         Location location3 = new Location();
         location3.setName("test location3 name");
         location3.setDescription("test locatin3 description");
         location3.setUser(user2);
-        location3.setItems(items);
-        location3.setRequests(requests);
+        location3.setItems(items);        
         location3 = locationDao.addLocation(location3);
         
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setItems(items);
+        request.setLocationId(location.getId());
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+        
+        Request request2 = new Request();
+        request2.setRequestDate(LocalDateTime.now());
+        request2.setStatus(1);
+        request2.setItems(items);
+        request2.setLocationId(location2.getId());
+        request2 = requestDao.addRequest(request2);
+        List<Request> requests2 = new ArrayList<>();
+        requests.add(request2);
+        
+        Request request3 = new Request();
+        request3.setRequestDate(LocalDateTime.now());
+        request3.setStatus(1);
+        request3.setItems(items);
+        request3.setLocationId(location3.getId());
+        request3 = requestDao.addRequest(request3);
+        List<Request> requests3 = new ArrayList<>();
+        requests.add(request3);
+        
+        location.setRequests(requests);
+        location2.setRequests(requests2);
+        location3.setRequests(requests3);
         List<Location> fromDao = locationDao.getAllLocationsByUser(user);
         
         assertEquals(3, fromDao);
