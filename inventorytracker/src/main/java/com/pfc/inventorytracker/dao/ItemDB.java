@@ -57,7 +57,7 @@ public class ItemDB implements ItemDao {
     public Item getItemById(int id) {
         try {
             Item item = new Item();
-            item = jdbc.queryForObject("SELECT * FROM category WHERE id = ?", new ItemMapper(), id);
+            item = jdbc.queryForObject("SELECT * FROM item WHERE id = ?", new ItemMapper(), id);
             item.setCategories(getCategoriesForItem(item));
             return item;
         } catch (DataAccessException ex) {
@@ -92,7 +92,7 @@ public class ItemDB implements ItemDao {
     @Override
     public List<Item> getAllItemsByCategory(Category category) {
         List<Item> items = jdbc.query("SELECT i.* FROM item i "
-                + "JOIN item_category ic ON i.id = ic.itemId WHERE so.categoryId =?",
+                + "JOIN item_category ic ON i.id = ic.itemId WHERE ic.categoryId =?",
                 new ItemMapper(), category.getId());
         items = addCategoriesForItems(items);
         return items;
@@ -122,6 +122,8 @@ public class ItemDB implements ItemDao {
                     c.getId());
         }
     }
+    
+    
 
     public static final class ItemMapper implements RowMapper<Item> {
 
@@ -130,8 +132,8 @@ public class ItemDB implements ItemDao {
             Item i = new Item();
             i.setId(rs.getInt("id"));
             i.setName(rs.getString("name"));
-            i.setDescription("description");
-            i.setNickname("nickname");
+            i.setDescription(rs.getString("description"));
+            i.setNickname(rs.getString("nickname"));
             i.setPrice(rs.getBigDecimal("price"));
             return i;
         }
@@ -145,8 +147,8 @@ public class ItemDB implements ItemDao {
             Item i = new Item();
             i.setId(rs.getInt("id"));
             i.setName(rs.getString("name"));
-            i.setDescription("description");
-            i.setNickname("nickname");
+            i.setDescription(rs.getString("description"));
+            i.setNickname(rs.getString("nickname"));
             i.setPrice(rs.getBigDecimal("price"));
             i.setInInventory(rs.getInt("inInventory"));
             i.setMax(rs.getInt("max"));
@@ -163,8 +165,8 @@ public class ItemDB implements ItemDao {
             Item i = new Item();
             i.setId(rs.getInt("id"));
             i.setName(rs.getString("name"));
-            i.setDescription("description");
-            i.setNickname("nickname");
+            i.setDescription(rs.getString("description"));
+            i.setNickname(rs.getString("nickname"));
             i.setPrice(rs.getBigDecimal("price"));
             i.setQuantity(rs.getInt("quantity"));
             return i;

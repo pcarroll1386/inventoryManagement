@@ -125,11 +125,12 @@ public class UserDBTest {
         user = userDao.addUser(user);
 
         User user2 = new User();
-        user.setUsername("test username2");
-        user.setPassword("test password2");
-        user.setEnabled(false);
-        user.setRoles(roles);
-
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
+        
         List<User> users = userDao.getAllUsers();
 
         assertEquals(2, users.size());
@@ -198,10 +199,55 @@ public class UserDBTest {
         user = userDao.addUser(user);
         User fromDao = userDao.getUserByUsername(user.getUsername());
         assertEquals(user, fromDao);
+        
+        Set<Role> newRoles = new HashSet<>();
+        newRoles.add(role);
+        newRoles.add(role3);
+        
+        Category category = new Category();
+        category.setName("test name");
+        category = categoryDao.addCategory(category);
 
-        roles.remove(role2);
-        roles.add(role3);
-        user.setRoles(roles);
+        Category category2 = new Category();
+        category2.setName("test2 name");
+        category2 = categoryDao.addCategory(category2);
+
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+        categories.add(category2);
+
+        Item item = new Item();
+        item.setName("test name");
+        item.setDescription("test description");
+        item.setInInventory(5);
+        item.setMax(10);
+        item.setMin(4);
+        item.setName("test nickname");
+        item.setPrice(new BigDecimal("25.56"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+
+        Item item2 = new Item();
+        item2.setName("test2 name");
+        item2.setDescription("test2 description");
+        item2.setInInventory(5);
+        item2.setMax(10);
+        item2.setMin(4);
+        item2.setName("test2 nickname");
+        item2.setPrice(new BigDecimal("25.97"));
+        item2.setCategories(categories);
+        item2 = itemDao.addItem(item2);
+
+        List<Item> items = new ArrayList<>();
+
+        Location location = new Location();
+        location.setName("Test name");
+        location.setUser(user);
+        location.setDescription("test Description");
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+        
+        user.setRoles(newRoles);
         userDao.updateUser(user);
 
         assertNotEquals(user, fromDao);
@@ -253,7 +299,6 @@ public class UserDBTest {
         item.setInInventory(5);
         item.setMax(10);
         item.setMin(4);
-        item.setQuantity(5);
         item.setName("test nickname");
         item.setPrice(new BigDecimal("25.56"));
         item.setCategories(categories);
@@ -265,7 +310,6 @@ public class UserDBTest {
         item2.setInInventory(5);
         item2.setMax(10);
         item2.setMin(4);
-        item2.setQuantity(5);
         item2.setName("test2 nickname");
         item2.setPrice(new BigDecimal("25.97"));
         item2.setCategories(categories);
@@ -312,18 +356,21 @@ public class UserDBTest {
         user = userDao.addUser(user);
 
         User user2 = new User();
-        user.setUsername("test username2");
-        user.setPassword("test password2");
-        user.setEnabled(false);
-        user.setRoles(roles);
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
 
-        roles.remove(role2);
+        Set<Role> newRoles = new HashSet<>();
+        newRoles.add(role);
 
         User user3 = new User();
-        user.setUsername("test username3");
-        user.setPassword("test password3");
-        user.setEnabled(false);
-        user.setRoles(roles);
+        user3.setUsername("test username3");
+        user3.setPassword("test password3");
+        user3.setEnabled(false);
+        user3.setRoles(newRoles);
+        user3 = userDao.addUser(user3);
 
         List<User> users = userDao.getAllUsersByRole(role);
 

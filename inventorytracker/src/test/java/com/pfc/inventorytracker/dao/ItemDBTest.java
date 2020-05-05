@@ -129,10 +129,6 @@ public class ItemDBTest {
         Item item = new Item();
         item.setName("test itemName");
         item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
@@ -141,10 +137,6 @@ public class ItemDBTest {
         Item item2 = new Item();
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
-        item2.setInInventory(3);
-        item2.setMax(10);
-        item2.setMin(5);
-        item2.setQuantity(7);
         item2.setNickname("test nickName2");
         item2.setPrice(new BigDecimal("25.95"));
         item2.setCategories(categories);
@@ -153,39 +145,14 @@ public class ItemDBTest {
         Item item3 = new Item();
         item3.setName("test itemName3");
         item3.setDescription("Test Description3");
-        item3.setInInventory(3);
-        item3.setMax(10);
-        item3.setMin(5);
-        item3.setQuantity(7);
         item3.setNickname("test nickName3");
         item3.setPrice(new BigDecimal("25.95"));
         item3.setCategories(categories);
         item3 = itemDao.addItem(item3);
 
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        items.add(item2);
-        items.add(item3);
-
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-
-        Location location = new Location();
-        location.setName("test location name");
-        location.setDescription("test locatin description");
-        location.setUser(user);
-        location.setItems(items);
-        location.setRequests(requests);
-        location = locationDao.addLocation(location);
-
         List<Item> fromDao = itemDao.getAllItems();
 
-        assertEquals(3, fromDao);
+        assertEquals(3, fromDao.size());
         assertTrue(fromDao.contains(item));
         assertTrue(fromDao.contains(item2));
         assertTrue(fromDao.contains(item3));
@@ -193,7 +160,7 @@ public class ItemDBTest {
     }
 
     /**
-     * Test ofof getItemById method & addItem method, of class ItemDB.
+     * Test of getItemById method & addItem method, of class ItemDB.
      */
     @Test
     public void testAddGetItem() {
@@ -219,33 +186,10 @@ public class ItemDBTest {
         Item item = new Item();
         item.setName("test itemName");
         item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
         item = itemDao.addItem(item);
-
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-
-        Location location = new Location();
-        location.setName("test location name");
-        location.setDescription("test locatin description");
-        location.setUser(user);
-        location.setItems(items);
-        location.setRequests(requests);
-        location = locationDao.addLocation(location);
 
         Item fromDao = itemDao.getItemById(item.getId());
 
@@ -284,10 +228,6 @@ public class ItemDBTest {
         Item item = new Item();
         item.setName("test itemName");
         item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
@@ -296,22 +236,24 @@ public class ItemDBTest {
         List<Item> items = new ArrayList<>();
         items.add(item);
 
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
 
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now());
+        request.setStatus(1);
+        request.setLocationId(location.getId());
+        request.setItems(items);        
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+
+        location.setRequests(requests);
+        
         Item fromDao = itemDao.getItemById(item.getId());
         assertEquals(item, fromDao);
 
@@ -360,10 +302,6 @@ public class ItemDBTest {
         Item item = new Item();
         item.setName("test itemName");
         item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
@@ -372,22 +310,24 @@ public class ItemDBTest {
         List<Item> items = new ArrayList<>();
         items.add(item);
 
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
         location.setUser(user);
         location.setItems(items);
-        location.setRequests(requests);
         location = locationDao.addLocation(location);
 
+        Request request = new Request();
+        request.setRequestDate(LocalDateTime.now().withNano(0));
+        request.setStatus(1);
+        request.setLocationId(location.getId());
+        request.setItems(items);
+        request = requestDao.addRequest(request);
+        List<Request> requests = new ArrayList<>();
+        requests.add(request);
+
+        location.setRequests(requests);
+        
         Item fromDao = itemDao.getItemById(item.getId());
         assertEquals(item, fromDao);
 
@@ -431,10 +371,6 @@ public class ItemDBTest {
         Item item = new Item();
         item.setName("test itemName");
         item.setDescription("Test Description");
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
-        item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
@@ -443,10 +379,6 @@ public class ItemDBTest {
         Item item2 = new Item();
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
-        item2.setInInventory(3);
-        item2.setMax(10);
-        item2.setMin(5);
-        item2.setQuantity(7);
         item2.setNickname("test nickName2");
         item2.setPrice(new BigDecimal("25.95"));
         item2.setCategories(categories);
@@ -455,39 +387,14 @@ public class ItemDBTest {
         Item item3 = new Item();
         item3.setName("test itemName3");
         item3.setDescription("Test Description3");
-        item3.setInInventory(3);
-        item3.setMax(10);
-        item3.setMin(5);
-        item3.setQuantity(7);
         item3.setNickname("test nickName3");
         item3.setPrice(new BigDecimal("25.95"));
         item3.setCategories(categories2);
         item3 = itemDao.addItem(item3);
-
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-        items.add(item2);
-        items.add(item3);
-
-        Request request = new Request();
-        request.setRequestDate(LocalDateTime.now());
-        request.setStatus(1);
-        request.setItems(items);
-        request = requestDao.addRequest(request);
-        List<Request> requests = new ArrayList<>();
-        requests.add(request);
-
-        Location location = new Location();
-        location.setName("test location name");
-        location.setDescription("test locatin description");
-        location.setUser(user);
-        location.setItems(items);
-        location.setRequests(requests);
-        location = locationDao.addLocation(location);
-
+        
         List<Item> fromDao = itemDao.getAllItemsByCategory(category);
 
-        assertEquals(2, fromDao);
+        assertEquals(2, fromDao.size());
         assertTrue(fromDao.contains(item));
         assertTrue(fromDao.contains(item2));
         assertFalse(fromDao.contains(item3));

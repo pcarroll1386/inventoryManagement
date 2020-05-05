@@ -6,14 +6,15 @@
 package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.dao.ItemDB.RequestItemMapper;
-import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
+import com.pfc.inventorytracker.entities.Category;
 import com.pfc.inventorytracker.entities.Item;
-import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -98,11 +99,26 @@ public class RequestDB implements RequestDao {
     }
 
     private List<Item> getItemsForRequest(Request request) {
-        return jdbc.query("SELECT i.*, ri.quantity FROM item i "
+        List<Item> items = jdbc.query("SELECT i.*, ri.quantity FROM item i "
                 + "JOIN request_item ri ON i.id = ri.itemId WHERE ri.requestId = ?",
                 new RequestItemMapper(),
                 request.getId());
+        for(Item item : items){
+            item.setCategories(getCategoriesforItem(item));
+        }
+        return items;
     }
+
+    private Set<Category> getCategoriesforItem(Item item) {
+        List<Category> categories = jdbc.query("SELECT c.* FROM category c "
+                + "JOIN item_category ic ON c.id = ic.categoryId WHERE itemId = ?", new CategoryDB.CategoryMapper(), item.getId());
+        Set<Category> categorySet = new HashSet<>();
+        for (Category c : categories) {
+            categorySet.add(c);
+        }
+        return categorySet;
+    }
+
 
     private void insertRequestItems(Request request) {
         for(Item item : request.getItems()){
@@ -112,7 +128,6 @@ public class RequestDB implements RequestDao {
                 item.getQuantity());
         }
     }
-
     public static final class RequestMapper implements RowMapper<Request> {
 
         @Override

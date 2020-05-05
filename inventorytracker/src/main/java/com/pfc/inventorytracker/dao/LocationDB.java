@@ -10,13 +10,17 @@ import com.pfc.inventorytracker.dao.ItemDB.LocationItemMapper;
 import com.pfc.inventorytracker.dao.ItemDB.RequestItemMapper;
 import com.pfc.inventorytracker.dao.RequestDB.RequestMapper;
 import com.pfc.inventorytracker.dao.UserDB.UserMapper;
+import com.pfc.inventorytracker.entities.Category;
 import com.pfc.inventorytracker.entities.Item;
 import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
+import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -83,6 +87,8 @@ public class LocationDB implements LocationDao {
     @Transactional
     public void deleteLocation(int id) {
         jdbc.update("DELETE FROM location_item WHERE locationId = ?", id);
+        jdbc.update("DELETE ri.* FROM request_item ri "
+                + "JOIN request r ON ri.requestId = r.id WHERE r.locationId = ?", id);
         jdbc.update("DELETE FROM request WHERE locationId = ?", id);
         jdbc.update("DELETE FROM location WHERE id = ?", id);
     }
@@ -108,15 +114,21 @@ public class LocationDB implements LocationDao {
                 + "JOIN location_item li ON i.id = li.itemId WHERE li.locationId = ?",
                 new LocationItemMapper(),
                 location.getId());
+        items = getCategorysForItems(items);
         return items;
     }
 
     private User getUserForLocation(Location location) {
+        try{
         User user = jdbc.queryForObject("SELECT u.* FROM user u "
                 + "JOIN location l ON u.username = l.username WHERE l.id = ?",
                 new UserMapper(),
                 location.getId());
+        user.setRoles(getRolesForUser(user));
         return user;
+        }catch(DataAccessException ex){
+            return null;
+        }
     }
 
     private List<Request> getRequestsForLocation(Location location) {
@@ -131,8 +143,37 @@ public class LocationDB implements LocationDao {
         for (Request r : requests) {
             List<Item> items = jdbc.query("SELECT i.*, ri.quantity FROM item i "
                     + "JOIN request_item ri ON i.id = ri.itemId WHERE requestId =?", new RequestItemMapper(), r.getId());
+            items = getCategorysForItems(items); 
+            r.setItems(items);
         }
         return requests;
+    }
+
+    private List<Item> getCategorysForItems(List<Item> items) {
+        for (Item i : items) {
+            i.setCategories(getCategoriesForItem(i));
+        }
+        return items;
+    }
+
+    private Set<Category> getCategoriesForItem(Item i) {
+        List<Category> categories = jdbc.query("SELECT c.* FROM category c "
+                + "JOIN item_category ic ON c.id = ic.categoryId WHERE itemId = ?", new CategoryDB.CategoryMapper(), i.getId());
+        Set<Category> categorySet = new HashSet<>();
+        for (Category c : categories) {
+            categorySet.add(c);
+        }
+        return categorySet;
+    }
+
+    private Set<Role> getRolesForUser(User user) {
+        List<Role> roleList = jdbc.query("SELECT r.* FROM role r "
+                + "JOIN user_role ur ON r.id = ur.roleId WHERE ur.username = ?", new RoleDB.RoleMapper(), user.getUsername());
+        Set<Role> roles = new HashSet<>();
+        for(Role role : roleList){
+            roles.add(role);
+        }
+        return roles;
     }
 
     private void insertLocationItems(Location location) {

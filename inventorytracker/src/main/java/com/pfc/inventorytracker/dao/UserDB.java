@@ -5,7 +5,9 @@
  */
 package com.pfc.inventorytracker.dao;
 
+import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
 import com.pfc.inventorytracker.dao.RoleDB.RoleMapper;
+import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.sql.ResultSet;
@@ -25,11 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author pfcar
  */
 @Repository
-public class UserDB implements UserDao{
-    
+public class UserDB implements UserDao {
+
     @Autowired
     JdbcTemplate jdbc;
-    
+
     @Override
     public List<User> getAllUsers() {
         List<User> users = jdbc.query("SELECT * FROM user", new UserMapper());
@@ -39,11 +41,11 @@ public class UserDB implements UserDao{
 
     @Override
     public User getUserByUsername(String username) {
-        try{
+        try {
             User user = jdbc.queryForObject("SELECT * FROM user WHERE username = ?", new UserMapper(), username);
             user.setRoles(getRolesForUser(user));
             return user;
-        }catch(DataAccessException ex){
+        } catch (DataAccessException ex) {
             return null;
         }
     }
@@ -62,12 +64,20 @@ public class UserDB implements UserDao{
     @Override
     @Transactional
     public void updateUser(User user) {
-        jdbc.update("UPDATE location SET username = ? WHERE username = ?", null, user.getUsername());
+        Location location = new Location();
+        try {
+            location = jdbc.queryForObject("SELECT * FROM location WHERE username = ?", new LocationMapper(), user.getUsername());
+            jdbc.update("UPDATE location SET username = ? WHERE username = ?", null, user.getUsername());
+        } catch (DataAccessException ex) {
+        }
+        jdbc.update("DELETE FROM user_role WHERE username = ?", user.getUsername());
         jdbc.update("UPDATE user SET password = ?, enabled = ? WHERE username = ?",
-                user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                user.getUsername());        
+                user.getUsername());
+        if (location != null) {
+            jdbc.update("UPDATE location SET username =? WHERE id = ?", user.getUsername(), location.getId());
+        }
         insertRolesForUser(user);
     }
 
@@ -90,7 +100,7 @@ public class UserDB implements UserDao{
     }
 
     private List<User> addRolesToUsers(List<User> users) {
-        for(User user : users){
+        for (User user : users) {
             user.setRoles(getRolesForUser(user));
         }
         return users;
@@ -100,20 +110,20 @@ public class UserDB implements UserDao{
         List<Role> roleList = jdbc.query("SELECT r.* FROM role r "
                 + "JOIN user_role ur ON r.id = ur.roleId WHERE ur.username = ?", new RoleMapper(), user.getUsername());
         Set<Role> roles = new HashSet<>();
-        for(Role role : roleList){
+        for (Role role : roleList) {
             roles.add(role);
         }
         return roles;
     }
 
     private void insertRolesForUser(User user) {
-        for(Role role : user.getRoles()){
+        for (Role role : user.getRoles()) {
             jdbc.update("INSERT INTO user_role(username, roleId) VALUES (?,?)",
                     user.getUsername(),
                     role.getId());
         }
     }
-    
+
     public static final class UserMapper implements RowMapper<User> {
 
         @Override
@@ -124,7 +134,7 @@ public class UserDB implements UserDao{
             u.setEnabled(rs.getBoolean("enabled"));
             return u;
         }
-        
+
     }
-    
+
 }

@@ -62,12 +62,12 @@ public class Request {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + this.id;
-        hash = 97 * hash + Objects.hashCode(this.requestDate);
-        hash = 97 * hash + this.status;
-        hash = 97 * hash + this.locationId;
-        hash = 97 * hash + Objects.hashCode(this.items);
+        int hash = 7;
+        hash = 59 * hash + this.id;
+        hash = 59 * hash + Objects.hashCode(this.requestDate);
+        hash = 59 * hash + this.status;
+        hash = 59 * hash + this.locationId;
+        hash = 59 * hash + Objects.hashCode(this.items);
         return hash;
     }
 

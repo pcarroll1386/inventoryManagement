@@ -59,8 +59,6 @@ public class Location {
     public void setRequests(List<Request> requests) {
         this.requests = requests;
     }
-    
-    
 
     public List<Item> getItems() {
         return items;
@@ -72,13 +70,13 @@ public class Location {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 83 * hash + this.id;
-        hash = 83 * hash + Objects.hashCode(this.name);
-        hash = 83 * hash + Objects.hashCode(this.description);
-        hash = 83 * hash + Objects.hashCode(this.user);
-        hash = 83 * hash + Objects.hashCode(this.requests);
-        hash = 83 * hash + Objects.hashCode(this.items);
+        int hash = 7;
+        hash = 79 * hash + this.id;
+        hash = 79 * hash + Objects.hashCode(this.name);
+        hash = 79 * hash + Objects.hashCode(this.description);
+        hash = 79 * hash + Objects.hashCode(this.user);
+        hash = 79 * hash + Objects.hashCode(this.requests);
+        hash = 79 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
