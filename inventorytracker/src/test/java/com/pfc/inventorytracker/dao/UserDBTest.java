@@ -76,7 +76,7 @@ public class UserDBTest {
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
-            itemDao.deleteItem(item.getId());
+            itemDao.deleteItemById(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
         for(Location location : locations){
@@ -217,6 +217,7 @@ public class UserDBTest {
         categories.add(category2);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test name");
         item.setDescription("test description");
         item.setInInventory(5);
@@ -228,6 +229,7 @@ public class UserDBTest {
         item = itemDao.addItem(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test2 name");
         item2.setDescription("test2 description");
         item2.setInInventory(5);
@@ -294,6 +296,7 @@ public class UserDBTest {
         categories.add(category2);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test name");
         item.setDescription("test description");
         item.setInInventory(5);
@@ -305,6 +308,7 @@ public class UserDBTest {
         item = itemDao.addItem(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test2 name");
         item2.setDescription("test2 description");
         item2.setInInventory(5);

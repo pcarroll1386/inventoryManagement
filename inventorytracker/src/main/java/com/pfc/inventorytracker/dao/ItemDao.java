@@ -19,8 +19,8 @@ public interface ItemDao {
 
     List<Item> getAllItems();
     Item addItem(Item item);
-    Item getItemById(int id);
+    Item getItemById(String id);
     void updateItem(Item item);
-    void deleteItem(int id);
+    void deleteItemById(String id);
     List<Item> getAllItemsByCategory(Category category);
 }

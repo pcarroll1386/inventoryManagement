@@ -77,7 +77,7 @@ public class RequestDBTest {
         }
         List<Item> items = itemDao.getAllItems();
         for (Item item : items) {
-            itemDao.deleteItem(item.getId());
+            itemDao.deleteItemById(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
         for (Location location : locations) {
@@ -126,6 +126,7 @@ public class RequestDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setInInventory(3);
@@ -146,13 +147,13 @@ public class RequestDBTest {
         location = locationDao.addLocation(location);
 
         item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
         items = new ArrayList<>();
         items.add(item);
 
@@ -217,6 +218,7 @@ public class RequestDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setInInventory(3);
@@ -228,6 +230,7 @@ public class RequestDBTest {
         item = itemDao.addItem(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
         item2.setInInventory(3);
@@ -250,22 +253,22 @@ public class RequestDBTest {
         location = locationDao.addLocation(location);
 
         item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
 
         item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
         item2.setQuantity(7);
         item2.setNickname("test nickName2");
         item2.setPrice(new BigDecimal("25.95"));
         item2.setCategories(categories);
-        item2 = itemDao.addItem(item2);
 
         items = new ArrayList<>();
         items.add(item);
@@ -319,6 +322,7 @@ public class RequestDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setInInventory(3);
@@ -339,17 +343,18 @@ public class RequestDBTest {
         location = locationDao.addLocation(location);
 
         item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
         items = new ArrayList<>();
         items.add(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
         item2.setQuantity(7);
@@ -408,6 +413,7 @@ public class RequestDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setInInventory(3);
@@ -428,13 +434,13 @@ public class RequestDBTest {
         location = locationDao.addLocation(location);
 
         item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
         items = new ArrayList<>();
         items.add(item);
 
@@ -489,6 +495,7 @@ public class RequestDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setInInventory(3);
@@ -524,13 +531,13 @@ public class RequestDBTest {
         
 
         item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setQuantity(7);
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
         items = new ArrayList<>();
         items.add(item);
 

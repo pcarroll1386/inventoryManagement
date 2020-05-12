@@ -77,7 +77,7 @@ public class ItemDBTest {
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
-            itemDao.deleteItem(item.getId());
+            itemDao.deleteItemById(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
         for(Location location : locations){
@@ -127,6 +127,7 @@ public class ItemDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setNickname("test nickName");
@@ -135,6 +136,7 @@ public class ItemDBTest {
         item = itemDao.addItem(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
         item2.setNickname("test nickName2");
@@ -143,6 +145,7 @@ public class ItemDBTest {
         item2 = itemDao.addItem(item2);
 
         Item item3 = new Item();
+        item3.setId("MI0536");
         item3.setName("test itemName3");
         item3.setDescription("Test Description3");
         item3.setNickname("test nickName3");
@@ -184,6 +187,7 @@ public class ItemDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setNickname("test nickName");
@@ -226,6 +230,7 @@ public class ItemDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setNickname("test nickName");
@@ -300,6 +305,7 @@ public class ItemDBTest {
         categories.add(category);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setNickname("test nickName");
@@ -331,7 +337,7 @@ public class ItemDBTest {
         Item fromDao = itemDao.getItemById(item.getId());
         assertEquals(item, fromDao);
 
-        itemDao.deleteItem(item.getId());
+        itemDao.deleteItemById(item.getId());
 
         fromDao = itemDao.getItemById(item.getId());
 
@@ -369,6 +375,7 @@ public class ItemDBTest {
         categories2.add(category2);
 
         Item item = new Item();
+        item.setId("MI0534");
         item.setName("test itemName");
         item.setDescription("Test Description");
         item.setNickname("test nickName");
@@ -377,6 +384,7 @@ public class ItemDBTest {
         item = itemDao.addItem(item);
 
         Item item2 = new Item();
+        item2.setId("MI0535");
         item2.setName("test itemName2");
         item2.setDescription("Test Description2");
         item2.setNickname("test nickName2");
@@ -385,6 +393,7 @@ public class ItemDBTest {
         item2 = itemDao.addItem(item2);
 
         Item item3 = new Item();
+        item3.setId("MI0536");
         item3.setName("test itemName3");
         item3.setDescription("Test Description3");
         item3.setNickname("test nickName3");

@@ -1,8 +1,8 @@
-drop database if exists inventorymanagementdbtest;
+drop database if exists inventorymanagementdb;
 
-create database inventorymanagementdbtest;
+create database inventorymanagementdb;
 
-use inventorymanagementdbtest;
+use inventorymanagementdb;
 
 create table user(
 	username varchar(50) primary key not null,
@@ -36,7 +36,7 @@ create table request(
     );
 
 create table item(
-	id int primary key auto_increment,
+	id varchar(50) primary key,
     `name` varchar(50) not null,
     nickname varchar(50),
     `description` varchar(200) not null,
@@ -45,7 +45,7 @@ create table item(
     
 create table location_item(
 	locationId int not null,
-    itemId int not null not null,
+    itemId varchar(50) not null,
     inInventory int not null default 0,
     max int,
     min int,
@@ -54,7 +54,7 @@ create table location_item(
 
 create table request_item(
 	requestId int not null,
-    itemId int not null,
+    itemId varchar(50) not null,
     quantity int,
     primary key(requestId, itemId)
     );
@@ -65,7 +65,7 @@ create table category(
     );
     
 create table item_category(
-	itemId int not null,
+	itemId varchar(50) not null,
     categoryId int not null,
     primary key(itemId, categoryId)
     );

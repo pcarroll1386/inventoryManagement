@@ -72,7 +72,7 @@ public class RoleDBTest {
         }
         List<Item> items = itemDao.getAllItems();
         for(Item item : items){
-            itemDao.deleteItem(item.getId());
+            itemDao.deleteItemById(item.getId());
         }
         List<Location> locations = locationDao.getAllLocations();
         for(Location location : locations){

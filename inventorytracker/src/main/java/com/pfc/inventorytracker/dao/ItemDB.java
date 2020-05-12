@@ -40,13 +40,12 @@ public class ItemDB implements ItemDao {
     @Override
     @Transactional
     public Item addItem(Item item) {
-        jdbc.update("INSERT INTO item (name, nickname, description, price) VALUES (?,?,?,?)",
+        jdbc.update("INSERT INTO item (id, name, nickname, description, price) VALUES (?,?,?,?,?)",
+                item.getId(),
                 item.getName(),
                 item.getNickname(),
                 item.getDescription(),
                 item.getPrice());
-        int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
-        item.setId(newId);
 
         insertItemCategory(item);
 
@@ -54,7 +53,7 @@ public class ItemDB implements ItemDao {
     }
 
     @Override
-    public Item getItemById(int id) {
+    public Item getItemById(String id) {
         try {
             Item item = new Item();
             item = jdbc.queryForObject("SELECT * FROM item WHERE id = ?", new ItemMapper(), id);
@@ -75,13 +74,13 @@ public class ItemDB implements ItemDao {
                 item.getDescription(),
                 item.getPrice(),
                 item.getId());
-        jdbc.update("DELETE FROM item_category WHERE itemId + ?", item.getId());
+        jdbc.update("DELETE FROM item_category WHERE itemId = ?", item.getId());
         insertItemCategory(item);
     }
 
     @Override
     @Transactional
-    public void deleteItem(int id) {
+    public void deleteItemById(String id) {
         jdbc.update("DELETE FROM item_category WHERE itemId = ?", id);
         jdbc.update("DELETE FROM location_item WHERE itemId = ?", id);
         jdbc.update("DELETE FROM request_item WHERE itemId = ?", id);
@@ -130,7 +129,7 @@ public class ItemDB implements ItemDao {
         @Override
         public Item mapRow(ResultSet rs, int arg1) throws SQLException {
             Item i = new Item();
-            i.setId(rs.getInt("id"));
+            i.setId(rs.getString("id"));
             i.setName(rs.getString("name"));
             i.setDescription(rs.getString("description"));
             i.setNickname(rs.getString("nickname"));
@@ -145,7 +144,7 @@ public class ItemDB implements ItemDao {
         @Override
         public Item mapRow(ResultSet rs, int arg1) throws SQLException {
             Item i = new Item();
-            i.setId(rs.getInt("id"));
+            i.setId(rs.getString("id"));
             i.setName(rs.getString("name"));
             i.setDescription(rs.getString("description"));
             i.setNickname(rs.getString("nickname"));
@@ -163,7 +162,7 @@ public class ItemDB implements ItemDao {
         @Override
         public Item mapRow(ResultSet rs, int arg1) throws SQLException {
             Item i = new Item();
-            i.setId(rs.getInt("id"));
+            i.setId(rs.getString("id"));
             i.setName(rs.getString("name"));
             i.setDescription(rs.getString("description"));
             i.setNickname(rs.getString("nickname"));

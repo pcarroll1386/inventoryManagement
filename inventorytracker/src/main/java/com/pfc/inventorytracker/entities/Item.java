@@ -14,7 +14,7 @@ import java.util.Set;
  * @author pfcar
  */
 public class Item {
-    private int id;
+    private String id;
     private String name;
     private String nickname;
     private String description;
@@ -25,11 +25,11 @@ public class Item {
     private int quantity;
     private Set<Category> categories;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -107,17 +107,17 @@ public class Item {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 79 * hash + this.id;
-        hash = 79 * hash + Objects.hashCode(this.name);
-        hash = 79 * hash + Objects.hashCode(this.nickname);
-        hash = 79 * hash + Objects.hashCode(this.description);
-        hash = 79 * hash + Objects.hashCode(this.price);
-        hash = 79 * hash + this.inInventory;
-        hash = 79 * hash + this.min;
-        hash = 79 * hash + this.max;
-        hash = 79 * hash + this.quantity;
-        hash = 79 * hash + Objects.hashCode(this.categories);
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        hash = 37 * hash + Objects.hashCode(this.name);
+        hash = 37 * hash + Objects.hashCode(this.nickname);
+        hash = 37 * hash + Objects.hashCode(this.description);
+        hash = 37 * hash + Objects.hashCode(this.price);
+        hash = 37 * hash + this.inInventory;
+        hash = 37 * hash + this.min;
+        hash = 37 * hash + this.max;
+        hash = 37 * hash + this.quantity;
+        hash = 37 * hash + Objects.hashCode(this.categories);
         return hash;
     }
 
@@ -133,9 +133,6 @@ public class Item {
             return false;
         }
         final Item other = (Item) obj;
-        if (this.id != other.id) {
-            return false;
-        }
         if (this.inInventory != other.inInventory) {
             return false;
         }
@@ -146,6 +143,9 @@ public class Item {
             return false;
         }
         if (this.quantity != other.quantity) {
+            return false;
+        }
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {
@@ -165,5 +165,5 @@ public class Item {
         }
         return true;
     }
-        
+    
 }
