@@ -5,6 +5,7 @@
  */
 package com.pfc.inventorytracker.entities;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ public class User {
     private String username;
     private String password;
     private boolean enabled;
+    private List<User> employees;
     private Set<Role> roles;
 
     public String getUsername() {
@@ -42,6 +44,14 @@ public class User {
         this.enabled = enabled;
     }
 
+    public List<User> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<User> employees) {
+        this.employees = employees;
+    }
+    
     public Set<Role> getRoles() {
         return roles;
     }
@@ -52,11 +62,12 @@ public class User {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 89 * hash + Objects.hashCode(this.username);
-        hash = 89 * hash + Objects.hashCode(this.password);
-        hash = 89 * hash + (this.enabled ? 1 : 0);
-        hash = 89 * hash + Objects.hashCode(this.roles);
+        int hash = 7;
+        hash = 59 * hash + Objects.hashCode(this.username);
+        hash = 59 * hash + Objects.hashCode(this.password);
+        hash = 59 * hash + (this.enabled ? 1 : 0);
+        hash = 59 * hash + Objects.hashCode(this.employees);
+        hash = 59 * hash + Objects.hashCode(this.roles);
         return hash;
     }
 
@@ -79,6 +90,9 @@ public class User {
             return false;
         }
         if (!Objects.equals(this.password, other.password)) {
+            return false;
+        }
+        if (!Objects.equals(this.employees, other.employees)) {
             return false;
         }
         if (!Objects.equals(this.roles, other.roles)) {

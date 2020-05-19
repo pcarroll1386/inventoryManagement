@@ -21,7 +21,83 @@
                     <h1 id="pageHeader">Inventory Management</h1>
                 </div>
             </div>
-            
+            <div class="row">
+                <div class="col">
+                    <li style="float:left"><a class="active" href="home">HOME</a></li>
+                    <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="inventory">INVENTORY</a></li>
+                    <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="dashboard">DASHBOARD</a></li>
+                    <li style="float:left"><a sec:authorize="hasRole('ROLE_WAREHOUSE')" href="requests">REQUESTS</a></li>
+                    <li style="float:left"><a sec:authorize="hasRole('ROLE_SUPERVISOR')" href="supervisors">SUPERVISOR</a></li>
+                    <li style="float:left"><a sec:authorize="hasRole('ROLE_ADMIN')" href="admin">ADMIN</a></li>
+                    <li style="float:right" id="loginTab"><a href="#myLoginModal" data-toggle="modal">LOGIN</a></li>
+
+                    <div id="myLoginModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div  th:if="${#authorization.expression('!isAuthenticated()')}"id="loginForm" class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Login</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="form-horizontal" role="form" method="POST" action="login">
+                                        <div class="form-group">
+                                            <label for="username" class="col-md-4 control-label">Username:</label>
+                                            <div class="col-md-12">
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="username"
+                                                       name="username" 
+                                                       placeholder="Enter Username"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password" class="col-md-4 control-label">Password:</label>
+                                            <div class="col-md-12">
+                                                <input type="password" 
+                                                       class="form-control" 
+                                                       id="password"
+                                                       name="password" 
+                                                       placeholder="Enter Password"/>
+                                            </div>
+                                        </div>
+                                        <input type="hidden"                        
+                                               th:name="${_csrf.parameterName}"
+                                               th:value="${_csrf.token}"/>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="form-group row">
+                                        <div class="col-md-offset-4 col-md-5">
+                                            <button href="home" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                        <div class="col-md-offset-4 col-md-5">
+                                            <input onclick="myAlert()" type="submit" 
+                                                   class="btn btn-primary" 
+                                                   id="search-button" 
+                                                   value="Sign In"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                            <div th:if="${#authorization.expression('isAuthenticated()')}" id="modalLogged" class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Login</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <br/>
+                                <h5 style="text-align:center" th:text="${#authentication.name} + ' is logged in.'">Logged In</h5>
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                    </ul> 
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+        </div>
+
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

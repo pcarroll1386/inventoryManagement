@@ -7,7 +7,8 @@ use inventorymanagementdb;
 create table user(
 	username varchar(50) primary key not null,
     `password` varchar(150) not null,
-    enabled boolean not null default 1 
+    enabled boolean not null default 1,
+    supervisor varchar(50)
     );
     
 create table `role`(
@@ -72,6 +73,9 @@ create table item_category(
     
 alter table location
 	add constraint foreign key (username) references `user`(username);
+    
+alter table `user`
+	add constraint foreign key (supervisor) references `user`(username);
 
 alter table user_role
 	add constraint foreign key (username) references `user`(username),
