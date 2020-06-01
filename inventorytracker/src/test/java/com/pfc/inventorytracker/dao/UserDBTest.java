@@ -128,10 +128,13 @@ public class UserDBTest {
         user2.setUsername("test username2");
         user2.setPassword("test password2");
         user2.setEnabled(false);
+        List<User> employees = new ArrayList<>();
+        employees.add(user);
+        user2.setEmployees(employees);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
         
-        List<User> users = userDao.getAllUsers();
+        List<User> users = userDao.getAllUsers();        
 
         assertEquals(2, users.size());
         assertTrue(users.contains(user));
@@ -164,9 +167,19 @@ public class UserDBTest {
 
         user = userDao.addUser(user);
 
-        User fromDao = userDao.getUserByUsername(user.getUsername());
+        User user2 = new User();
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        List<User> employees = new ArrayList<>();
+        employees.add(user);
+        user2.setEmployees(employees);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
 
-        assertEquals(user, fromDao);
+        User fromDao = userDao.getUserByUsername(user2.getUsername());
+
+        assertEquals(user2, fromDao);
     }
 
     /**
@@ -195,6 +208,16 @@ public class UserDBTest {
         user.setPassword("test password");
         user.setEnabled(true);
         user.setRoles(roles);
+
+        User user2 = new User();
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        List<User> employees = new ArrayList<>();
+        employees.add(user);
+        user2.setEmployees(employees);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
 
         user = userDao.addUser(user);
         User fromDao = userDao.getUserByUsername(user.getUsername());
@@ -282,6 +305,16 @@ public class UserDBTest {
         user.setEnabled(true);
         user.setRoles(roles);
         user = userDao.addUser(user);
+
+        User user2 = new User();
+        user2.setUsername("test username2");
+        user2.setPassword("test password2");
+        user2.setEnabled(false);
+        List<User> employees = new ArrayList<>();
+        employees.add(user);
+        user2.setEmployees(employees);
+        user2.setRoles(roles);
+        user2 = userDao.addUser(user2);
 
         Category category = new Category();
         category.setName("test name");

@@ -2,7 +2,7 @@
 <!--
     Name: Paul F. Carroll
     Date Created: 5/12/2020
-    Most recent revision: 5/12/2020.
+    Most recent revision: 6/1/2020.
 -->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
@@ -23,78 +23,85 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <li style="float:left"><a class="active" href="home">HOME</a></li>
-                    <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="inventory">INVENTORY</a></li>
-                    <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="dashboard">DASHBOARD</a></li>
-                    <li style="float:left"><a sec:authorize="hasRole('ROLE_WAREHOUSE')" href="requests">REQUESTS</a></li>
-                    <li style="float:left"><a sec:authorize="hasRole('ROLE_SUPERVISOR')" href="supervisors">SUPERVISOR</a></li>
-                    <li style="float:left"><a sec:authorize="hasRole('ROLE_ADMIN')" href="admin">ADMIN</a></li>
-                    <li style="float:right" id="loginTab"><a href="#myLoginModal" data-toggle="modal">LOGIN</a></li>
+                    <ul>
+                        <li style="float:left"><a class="active" href="home">HOME</a></li>
+                        <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="#" th:href="@{/dashboard(username=${#authentication.name})}">DASHBOARD</a></li>
+                        <li style="float:left"><a sec:authorize="hasRole('ROLE_USER')" href="#" th:href="@{/inventory(username=${#authentication.name})}">INVENTORY</a></li>
+                        <li style="float:left"><a sec:authorize="hasRole('ROLE_WAREHOUSE')" href="requests">REQUESTS</a></li>
+                        <li style="float:left"><a sec:authorize="hasRole('ROLE_SUPERVISOR')" href="#" th:href="@{/supervisor(username=${#authentication.name})}">SUPERVISOR</a></li>
+                        <li style="float:left"><a sec:authorize="hasRole('ROLE_ADMIN')" href="admin">ADMIN</a></li>
+                        <li style="float:right" id="loginTab"><a href="#myLoginModal" data-toggle="modal">LOGIN</a></li>
 
-                    <div id="myLoginModal" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div  th:if="${#authorization.expression('!isAuthenticated()')}"id="loginForm" class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Login</h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <form class="form-horizontal" role="form" method="POST" action="login">
-                                        <div class="form-group">
-                                            <label for="username" class="col-md-4 control-label">Username:</label>
-                                            <div class="col-md-12">
-                                                <input type="text" 
-                                                       class="form-control" 
-                                                       id="username"
-                                                       name="username" 
-                                                       placeholder="Enter Username"/>
+                        <div id="myLoginModal" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                                <div  th:if="${#authorization.expression('!isAuthenticated()')}" id="loginForm" class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Login</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form class="form-horizontal" role="form" method="POST" action="login">
+                                            <div class="form-group">
+                                                <label for="username" class="col-md-4 control-label">Username:</label>
+                                                <div class="col-md-12">
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="username"
+                                                           name="username" 
+                                                           placeholder="Enter Username"/>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="password" class="col-md-4 control-label">Password:</label>
-                                            <div class="col-md-12">
-                                                <input type="password" 
-                                                       class="form-control" 
-                                                       id="password"
-                                                       name="password" 
-                                                       placeholder="Enter Password"/>
+                                            <div class="form-group">
+                                                <label for="password" class="col-md-4 control-label">Password:</label>
+                                                <div class="col-md-12">
+                                                    <input type="password" 
+                                                           class="form-control" 
+                                                           id="password"
+                                                           name="password" 
+                                                           placeholder="Enter Password"/>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <input type="hidden"                        
-                                               th:name="${_csrf.parameterName}"
-                                               th:value="${_csrf.token}"/>
-                                </div>
-                                <div class="modal-footer">
-                                    <div class="form-group row">
-                                        <div class="col-md-offset-4 col-md-5">
-                                            <button href="home" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                                        </div>
-                                        <div class="col-md-offset-4 col-md-5">
-                                            <input onclick="myAlert()" type="submit" 
-                                                   class="btn btn-primary" 
-                                                   id="search-button" 
-                                                   value="Sign In"/>
+                                            <input type="hidden"                        
+                                                   th:name="${_csrf.parameterName}"
+                                                   th:value="${_csrf.token}"/>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class="form-group row">
+                                            <div class="col-md-offset-4 col-md-5">
+                                                <button href="home" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                            <div class="col-md-offset-4 col-md-5">
+                                                <input onclick="myAlert()" type="submit" 
+                                                       class="btn btn-primary" 
+                                                       id="search-button" 
+                                                       value="Sign In"/>
+                                            </div>
                                         </div>
                                     </div>
+                                    </form>
                                 </div>
-                                </form>
-                            </div>
-                            <div th:if="${#authorization.expression('isAuthenticated()')}" id="modalLogged" class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Login</h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div th:if="${#authorization.expression('isAuthenticated()')}" id="modalLogged" class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Login</h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <br/>
+                                    <h5 style="text-align:center" th:text="${#authentication.name} + ' is logged in.'">Logged In</h5>
+                                    <br/>
                                 </div>
-                                <br/>
-                                <h5 style="text-align:center" th:text="${#authentication.name} + ' is logged in.'">Logged In</h5>
-                                <br/>
                             </div>
                         </div>
-                    </div>
                     </ul> 
                 </div>
             </div>
             <div class="row">
-
+                <div class="col">
+                    <h3>Inventory Tracer</h3>
+                    <p>Create locations and track inventory based on jobs done.</p>
+                </div>
+            </div>
+            <div class="row" th:if="${#authorization.expression('!isAuthenticated()')}">
+                <!--This will have a request a new login once testing for basic features is done -->
             </div>
         </div>
 

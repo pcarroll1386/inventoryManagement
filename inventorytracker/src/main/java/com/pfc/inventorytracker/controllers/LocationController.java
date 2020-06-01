@@ -11,6 +11,9 @@ import com.pfc.inventorytracker.dao.LocationDao;
 import com.pfc.inventorytracker.dao.RequestDao;
 import com.pfc.inventorytracker.dao.RoleDao;
 import com.pfc.inventorytracker.dao.UserDao;
+import com.pfc.inventorytracker.entities.Location;
+import com.pfc.inventorytracker.entities.User;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,5 +43,12 @@ public class LocationController {
     @Autowired
     UserDao userDao;
     
+    @GetMapping("inventory")
+    public String inventoryPage(String username, Model model){
+        User user = userDao.getUserByUsername(username);
+        List<Location> locations = locationDao.getAllLocationsByUser(user);
+        model.addAttribute("locations", locations);
+        return "inventory";
+    }
     
 }
