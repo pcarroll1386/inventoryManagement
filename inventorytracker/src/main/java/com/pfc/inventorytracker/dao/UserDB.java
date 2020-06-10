@@ -35,7 +35,7 @@ public class UserDB implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> users = jdbc.query("SELECT * FROM user", new UserMapper());
-        users = addRolesToUsers(users);
+        users = addRolesAndSupervisorToUsers(users);
         return users;
     }
 
@@ -44,6 +44,7 @@ public class UserDB implements UserDao {
         try {
             User user = jdbc.queryForObject("SELECT * FROM user WHERE username = ?", new UserMapper(), username);
             user.setRoles(getRolesForUser(user));
+            user.setSupervisor(getSupervisorForUser(user));
             return user;
         } catch (DataAccessException ex) {
             return null;
@@ -57,6 +58,12 @@ public class UserDB implements UserDao {
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled());
+
+        if (user.getSupervisor() != null) {
+            jdbc.update("UPDATE user SET supervisor = ? WHERE username =?",
+                    user.getSupervisor().getUsername(),
+                    user.getUsername());
+        }
         insertRolesForUser(user);
         return user;
     }
@@ -70,10 +77,15 @@ public class UserDB implements UserDao {
             jdbc.update("UPDATE location SET username = ? WHERE username = ?", null, user.getUsername());
         } catch (DataAccessException ex) {
         }
+        try {
+            jdbc.update("UPDATE user SET supervisor = ? WHERE username = ?", null, user.getUsername());
+        } catch (DataAccessException ex) {
+        }
         jdbc.update("DELETE FROM user_role WHERE username = ?", user.getUsername());
-        jdbc.update("UPDATE user SET password = ?, enabled = ? WHERE username = ?",
+        jdbc.update("UPDATE user SET password = ?, enabled = ?, supervisor = ? WHERE username = ?",
                 user.getPassword(),
                 user.isEnabled(),
+                user.getSupervisor().getUsername(),
                 user.getUsername());
         if (location != null) {
             jdbc.update("UPDATE location SET username =? WHERE id = ?", user.getUsername(), location.getId());
@@ -86,22 +98,36 @@ public class UserDB implements UserDao {
     public void deleteUser(String username) {
         jdbc.update("DELETE FROM user_role WHERE username = ?", username);
         jdbc.update("UPDATE location SET username = ? WHERE username = ?", null, username);
+        try {
+            User supervisor = jdbc.queryForObject("SELECT u.* FROM user u "
+                    + "JOIN user p ON u.username = p.supervisor WHERE p.username = ?", new UserMapper(), username);
+            jdbc.update("UPDATE user SET supervisor = ? WHERE username = ?", null, supervisor.getUsername());
+        } catch (DataAccessException ex) {
+        }
         jdbc.update("DELETE FROM user WHERE username = ?", username);
     }
 
     @Override
-    public List<User> getAllUsersByRole(Role role) {
+    public List<User> getAllUsersByRole(Role role
+    ) {
         List<User> users = jdbc.query("SELECT u.* FROM user u "
                 + "JOIN user_role ur ON u.username = ur.username WHERE roleId=?",
                 new UserMapper(),
                 role.getId());
-        users = addRolesToUsers(users);
+        users = addRolesAndSupervisorToUsers(users);
         return users;
     }
 
-    private List<User> addRolesToUsers(List<User> users) {
+    @Override
+    public List<User> getAllBySupervisor(User supervisor
+    ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private List<User> addRolesAndSupervisorToUsers(List<User> users) {
         for (User user : users) {
             user.setRoles(getRolesForUser(user));
+            user.setSupervisor(getSupervisorForUser(user));
         }
         return users;
     }
@@ -122,6 +148,17 @@ public class UserDB implements UserDao {
                     user.getUsername(),
                     role.getId());
         }
+    }
+
+    private User getSupervisorForUser(User user) {
+        User supervisor = new User();
+        try {
+            supervisor = jdbc.queryForObject("SELECT u.* FROM user u "
+                    + "JOIN user p ON u.username = p.supervisor WHERE p.username= ?", new UserMapper(), user.getUsername());
+        } catch (DataAccessException ex) {
+        }
+        user.setSupervisor(supervisor);
+        return user;
     }
 
     public static final class UserMapper implements RowMapper<User> {

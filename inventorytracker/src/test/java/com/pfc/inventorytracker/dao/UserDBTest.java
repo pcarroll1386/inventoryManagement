@@ -128,9 +128,7 @@ public class UserDBTest {
         user2.setUsername("test username2");
         user2.setPassword("test password2");
         user2.setEnabled(false);
-        List<User> employees = new ArrayList<>();
-        employees.add(user);
-        user2.setEmployees(employees);
+        user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
         
@@ -171,11 +169,11 @@ public class UserDBTest {
         user2.setUsername("test username2");
         user2.setPassword("test password2");
         user2.setEnabled(false);
-        List<User> employees = new ArrayList<>();
-        employees.add(user);
-        user2.setEmployees(employees);
+        user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
+        
+        user.setSupervisor(user2);
 
         User fromDao = userDao.getUserByUsername(user2.getUsername());
 
@@ -208,6 +206,7 @@ public class UserDBTest {
         user.setPassword("test password");
         user.setEnabled(true);
         user.setRoles(roles);
+        user = userDao.addUser(user);
 
         User user2 = new User();
         user2.setUsername("test username2");
@@ -215,11 +214,10 @@ public class UserDBTest {
         user2.setEnabled(false);
         List<User> employees = new ArrayList<>();
         employees.add(user);
-        user2.setEmployees(employees);
+        user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
-
-        user = userDao.addUser(user);
+        
         User fromDao = userDao.getUserByUsername(user.getUsername());
         assertEquals(user, fromDao);
         
@@ -310,9 +308,7 @@ public class UserDBTest {
         user2.setUsername("test username2");
         user2.setPassword("test password2");
         user2.setEnabled(false);
-        List<User> employees = new ArrayList<>();
-        employees.add(user);
-        user2.setEmployees(employees);
+        user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
 
@@ -397,6 +393,7 @@ public class UserDBTest {
         user2.setPassword("test password2");
         user2.setEnabled(false);
         user2.setRoles(roles);
+        user2.setSupervisor(user);
         user2 = userDao.addUser(user2);
 
         Set<Role> newRoles = new HashSet<>();

@@ -20,4 +20,5 @@ public interface UserDao {
     void updateUser(User user);
     void deleteUser(String username);
     List<User> getAllUsersByRole(Role role);
+    List<User> getAllBySupervisor(User supervisor);
 }
