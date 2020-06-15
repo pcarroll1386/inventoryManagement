@@ -172,8 +172,6 @@ public class UserDBTest {
         user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
-        
-        user.setSupervisor(user2);
 
         User fromDao = userDao.getUserByUsername(user2.getUsername());
 
@@ -211,12 +209,19 @@ public class UserDBTest {
         User user2 = new User();
         user2.setUsername("test username2");
         user2.setPassword("test password2");
-        user2.setEnabled(false);
+        user2.setEnabled(true);
         List<User> employees = new ArrayList<>();
         employees.add(user);
         user2.setSupervisor(user);
         user2.setRoles(roles);
         user2 = userDao.addUser(user2);
+        
+        User user3 = new User();
+        user3.setUsername("test username3");
+        user3.setPassword("test password3");
+        user3.setEnabled(true);
+        user3.setRoles(roles);
+        user3 = userDao.addUser(user3);
         
         User fromDao = userDao.getUserByUsername(user.getUsername());
         assertEquals(user, fromDao);
@@ -271,6 +276,7 @@ public class UserDBTest {
         location = locationDao.addLocation(location);
         
         user.setRoles(newRoles);
+        user.setSupervisor(user3);
         userDao.updateUser(user);
 
         assertNotEquals(user, fromDao);
