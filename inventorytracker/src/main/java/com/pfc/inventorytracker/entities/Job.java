@@ -15,9 +15,9 @@ import java.util.Objects;
 public class Job {
     
     private int id;
-    private int locationId;
+    private Location location;
+    private String name;
     private List<Item> items;
-    private List<Category> categories;
 
     public int getId() {
         return id;
@@ -27,12 +27,20 @@ public class Job {
         this.id = id;
     }
 
-    public int getLocationId() {
-        return locationId;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLocationId(int locationId) {
-        this.locationId = locationId;
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Item> getItems() {
@@ -43,21 +51,13 @@ public class Job {
         this.items = items;
     }
 
-    public List<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
-    }
-
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + this.id;
-        hash = 41 * hash + this.locationId;
-        hash = 41 * hash + Objects.hashCode(this.items);
-        hash = 41 * hash + Objects.hashCode(this.categories);
+        hash = 13 * hash + this.id;
+        hash = 13 * hash + Objects.hashCode(this.location);
+        hash = 13 * hash + Objects.hashCode(this.name);
+        hash = 13 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -76,13 +76,13 @@ public class Job {
         if (this.id != other.id) {
             return false;
         }
-        if (this.locationId != other.locationId) {
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.location, other.location)) {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {
-            return false;
-        }
-        if (!Objects.equals(this.categories, other.categories)) {
             return false;
         }
         return true;

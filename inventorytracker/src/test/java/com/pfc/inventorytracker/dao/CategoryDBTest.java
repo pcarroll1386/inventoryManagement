@@ -7,6 +7,7 @@ package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.entities.Category;
 import com.pfc.inventorytracker.entities.Item;
+import com.pfc.inventorytracker.entities.Job;
 import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
 import com.pfc.inventorytracker.entities.Role;
@@ -56,6 +57,9 @@ public class CategoryDBTest {
     @Autowired
     UserDao userDao;
     
+    @Autowired
+    JobDao jobDao;
+    
     public CategoryDBTest() {
     }
     
@@ -92,6 +96,10 @@ public class CategoryDBTest {
         List<User> users = userDao.getAllUsers();
         for(User user : users){
             userDao.deleteUser(user.getUsername());
+        }
+        List<Job> jobs = jobDao.getAllJobs();
+        for(Job job : jobs){
+            jobDao.deleteJob(job.getId());
         }
     }
     

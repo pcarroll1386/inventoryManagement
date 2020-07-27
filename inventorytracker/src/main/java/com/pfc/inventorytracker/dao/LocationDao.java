@@ -19,5 +19,4 @@ public interface LocationDao {
     Location addLocation(Location location);
     void updateLocation(Location location);
     void deleteLocation(int id);
-    List<Location> getAllLocationsByUser(User user);
 }

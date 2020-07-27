@@ -18,7 +18,6 @@ public class Location {
     private String description;
     private boolean template;
     private List<Item> items;
-    private List<Job> jobs;
 
     public int getId() {
         return id;
@@ -59,14 +58,6 @@ public class Location {
     public void setItems(List<Item> items) {
         this.items = items;
     }
-    
-    public List<Job> getJobs() {
-        return jobs;
-    }
-
-    public void setJobs(List<Job> jobs) {
-        this.jobs = jobs;
-    }
 
     @Override
     public int hashCode() {
@@ -76,7 +67,6 @@ public class Location {
         hash = 37 * hash + Objects.hashCode(this.description);
         hash = 37 * hash + (this.template ? 1 : 0);
         hash = 37 * hash + Objects.hashCode(this.items);
-        hash = 37 * hash + Objects.hashCode(this.jobs);
         return hash;
     }
 
@@ -105,9 +95,6 @@ public class Location {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {
-            return false;
-        }
-        if (!Objects.equals(this.jobs, other.jobs)) {
             return false;
         }
         return true;

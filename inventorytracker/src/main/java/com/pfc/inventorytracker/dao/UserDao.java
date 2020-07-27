@@ -5,6 +5,7 @@
  */
 package com.pfc.inventorytracker.dao;
 
+import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.util.List;
@@ -20,5 +21,6 @@ public interface UserDao {
     void updateUser(User user);
     void deleteUser(String username);
     List<User> getAllUsersByRole(Role role);
+    List<User> getAllUsersByLocation(Location location);
     List<User> getAllBySupervisor(User supervisor);
 }
