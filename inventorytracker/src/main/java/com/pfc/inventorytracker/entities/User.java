@@ -18,7 +18,8 @@ public class User {
     private String password;
     private boolean enabled;
     private User supervisor;
-    private Set<Role> roles;
+    private List<Location> locations;
+    private Set<Role> roles;  
 
     public String getUsername() {
         return username;
@@ -43,13 +44,21 @@ public class User {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-    
+
     public User getSupervisor() {
         return supervisor;
     }
 
     public void setSupervisor(User supervisor) {
         this.supervisor = supervisor;
+    }
+
+    public List<Location> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<Location> locations) {
+        this.locations = locations;
     }
 
     public Set<Role> getRoles() {
@@ -63,11 +72,12 @@ public class User {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.username);
-        hash = 97 * hash + Objects.hashCode(this.password);
-        hash = 97 * hash + (this.enabled ? 1 : 0);
-        hash = 97 * hash + Objects.hashCode(this.supervisor);
-        hash = 97 * hash + Objects.hashCode(this.roles);
+        hash = 37 * hash + Objects.hashCode(this.username);
+        hash = 37 * hash + Objects.hashCode(this.password);
+        hash = 37 * hash + (this.enabled ? 1 : 0);
+        hash = 37 * hash + Objects.hashCode(this.supervisor);
+        hash = 37 * hash + Objects.hashCode(this.locations);
+        hash = 37 * hash + Objects.hashCode(this.roles);
         return hash;
     }
 
@@ -95,10 +105,14 @@ public class User {
         if (!Objects.equals(this.supervisor, other.supervisor)) {
             return false;
         }
+        if (!Objects.equals(this.locations, other.locations)) {
+            return false;
+        }
         if (!Objects.equals(this.roles, other.roles)) {
             return false;
         }
         return true;
     }
+    
     
 }

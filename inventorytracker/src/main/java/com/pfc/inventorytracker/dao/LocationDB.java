@@ -50,8 +50,6 @@ public class LocationDB implements LocationDao {
         try {
             Location location = jdbc.queryForObject("SELECT * FROM location WHERE id = ?", new LocationMapper(), id);
             location.setItems(getItemsForLocation(location));
-            location.setUser(getUserForLocation(location));
-            location.setRequests(getRequestsForLocation(location));
             return location;
         } catch (DataAccessException ex) {
             return null;
@@ -63,8 +61,7 @@ public class LocationDB implements LocationDao {
     public Location addLocation(Location location) {
         jdbc.update("INSERT INTO location(name, description, username) VALUES (?,?,?)",
                 location.getName(),
-                location.getDescription(),
-                location.getUser().getUsername());
+                location.getDescription());
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         location.setId(newId);
         insertLocationItems(location);
@@ -74,10 +71,10 @@ public class LocationDB implements LocationDao {
     @Override
     @Transactional
     public void updateLocation(Location location) {
-        jdbc.update("UPDATE location SET name = ?, description = ?, username = ? WHERE id= ?",
+        jdbc.update("UPDATE location SET name = ?, description = ?, template = ? WHERE id= ?",
                 location.getName(),
                 location.getDescription(),
-                location.getUser().getUsername(),
+                location.isTemplate(),
                 location.getId());
         jdbc.update("DELETE FROM location_item WHERE locationId = ?", location.getId());
         insertLocationItems(location);
@@ -86,6 +83,7 @@ public class LocationDB implements LocationDao {
     @Override
     @Transactional
     public void deleteLocation(int id) {
+        jdbc.update("DELETE FROM user_location WHERE locationId = ?", id);
         jdbc.update("DELETE FROM location_item WHERE locationId = ?", id);
         jdbc.update("DELETE ri.* FROM request_item ri "
                 + "JOIN request r ON ri.requestId = r.id WHERE r.locationId = ?", id);
@@ -96,15 +94,13 @@ public class LocationDB implements LocationDao {
     @Override
     public List<Location> getAllLocationsByUser(User user) {
         List<Location> locations = jdbc.query("SELECT * FROM location where username = ?", new LocationMapper(), user.getUsername());
-        locations = addItemsReqeustsAndUserToLocations(locations);
+        locations = addItemsReqeustsAndUsersToLocations(locations);
         return locations;
     }
 
-    private List<Location> addItemsReqeustsAndUserToLocations(List<Location> locations) {
+    private List<Location> addItemsReqeustsAndUsersToLocations(List<Location> locations) {
         for (Location location : locations) {
             location.setItems(getItemsForLocation(location));
-            location.setUser(getUserForLocation(location));
-            location.setRequests(getRequestsForLocation(location));
         }
         return locations;
     }

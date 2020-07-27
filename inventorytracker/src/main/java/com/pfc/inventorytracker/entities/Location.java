@@ -16,9 +16,9 @@ public class Location {
     private int id;
     private String name;
     private String description;
-    private User user;
-    private List<Request> requests;
+    private boolean template;
     private List<Item> items;
+    private List<Job> jobs;
 
     public int getId() {
         return id;
@@ -44,20 +44,12 @@ public class Location {
         this.description = description;
     }
 
-    public User getUser() {
-        return user;
+    public boolean isTemplate() {
+        return template;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Request> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(List<Request> requests) {
-        this.requests = requests;
+    public void setTemplate(boolean template) {
+        this.template = template;
     }
 
     public List<Item> getItems() {
@@ -67,16 +59,24 @@ public class Location {
     public void setItems(List<Item> items) {
         this.items = items;
     }
+    
+    public List<Job> getJobs() {
+        return jobs;
+    }
+
+    public void setJobs(List<Job> jobs) {
+        this.jobs = jobs;
+    }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + this.id;
-        hash = 79 * hash + Objects.hashCode(this.name);
-        hash = 79 * hash + Objects.hashCode(this.description);
-        hash = 79 * hash + Objects.hashCode(this.user);
-        hash = 79 * hash + Objects.hashCode(this.requests);
-        hash = 79 * hash + Objects.hashCode(this.items);
+        int hash = 3;
+        hash = 37 * hash + this.id;
+        hash = 37 * hash + Objects.hashCode(this.name);
+        hash = 37 * hash + Objects.hashCode(this.description);
+        hash = 37 * hash + (this.template ? 1 : 0);
+        hash = 37 * hash + Objects.hashCode(this.items);
+        hash = 37 * hash + Objects.hashCode(this.jobs);
         return hash;
     }
 
@@ -95,19 +95,19 @@ public class Location {
         if (this.id != other.id) {
             return false;
         }
+        if (this.template != other.template) {
+            return false;
+        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         if (!Objects.equals(this.description, other.description)) {
             return false;
         }
-        if (!Objects.equals(this.user, other.user)) {
-            return false;
-        }
-        if (!Objects.equals(this.requests, other.requests)) {
-            return false;
-        }
         if (!Objects.equals(this.items, other.items)) {
+            return false;
+        }
+        if (!Objects.equals(this.jobs, other.jobs)) {
             return false;
         }
         return true;

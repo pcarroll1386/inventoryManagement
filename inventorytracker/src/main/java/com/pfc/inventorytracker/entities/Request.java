@@ -15,9 +15,13 @@ import java.util.Objects;
  */
 public class Request {
     private int id;
-    private LocalDateTime requestDate;
+    private LocalDateTime submitDate;
+    private LocalDateTime filledDate;
+    private String notes;
     private int status;
-    private int locationId;
+    private int type;
+    private int priority;
+    private Location location;
     private List<Item> items;
 
     public int getId() {
@@ -28,12 +32,28 @@ public class Request {
         this.id = id;
     }
 
-    public LocalDateTime getRequestDate() {
-        return requestDate;
+    public LocalDateTime getSubmitDate() {
+        return submitDate;
     }
 
-    public void setRequestDate(LocalDateTime requestDate) {
-        this.requestDate = requestDate;
+    public void setSubmitDate(LocalDateTime submitDate) {
+        this.submitDate = submitDate;
+    }
+
+    public LocalDateTime getFilledDate() {
+        return filledDate;
+    }
+
+    public void setFilledDate(LocalDateTime filledDate) {
+        this.filledDate = filledDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public int getStatus() {
@@ -44,12 +64,28 @@ public class Request {
         this.status = status;
     }
 
-    public int getLocationId() {
-        return locationId;
+    public int getType() {
+        return type;
     }
 
-    public void setLocationId(int locationId) {
-        this.locationId = locationId;
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public List<Item> getItems() {
@@ -63,11 +99,15 @@ public class Request {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + this.id;
-        hash = 59 * hash + Objects.hashCode(this.requestDate);
-        hash = 59 * hash + this.status;
-        hash = 59 * hash + this.locationId;
-        hash = 59 * hash + Objects.hashCode(this.items);
+        hash = 97 * hash + this.id;
+        hash = 97 * hash + Objects.hashCode(this.submitDate);
+        hash = 97 * hash + Objects.hashCode(this.filledDate);
+        hash = 97 * hash + Objects.hashCode(this.notes);
+        hash = 97 * hash + this.status;
+        hash = 97 * hash + this.type;
+        hash = 97 * hash + this.priority;
+        hash = 97 * hash + Objects.hashCode(this.location);
+        hash = 97 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -89,10 +129,22 @@ public class Request {
         if (this.status != other.status) {
             return false;
         }
-        if (this.locationId != other.locationId) {
+        if (this.type != other.type) {
             return false;
         }
-        if (!Objects.equals(this.requestDate, other.requestDate)) {
+        if (this.priority != other.priority) {
+            return false;
+        }
+        if (!Objects.equals(this.notes, other.notes)) {
+            return false;
+        }
+        if (!Objects.equals(this.submitDate, other.submitDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.filledDate, other.filledDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.location, other.location)) {
             return false;
         }
         if (!Objects.equals(this.items, other.items)) {

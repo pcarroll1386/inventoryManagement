@@ -1,14 +1,14 @@
-drop database if exists inventorymanagementdb;
+drop database if exists inventorymanagementdbtest;
 
-create database inventorymanagementdb;
+create database inventorymanagementdbtest;
 
-use inventorymanagementdb;
+use inventorymanagementdbtest;
 
 create table user(
 	username varchar(50) primary key not null,
     `password` varchar(150) not null,
     enabled boolean not null default 1,
-    supervisor varchar(50)
+    supervisorId varchar(50)
     );
     
 create table `role`(
@@ -26,14 +26,32 @@ create table location(
 	id int primary key auto_increment,
 	`name` varchar(50) not null,
     `description` varchar(50),
-    username varchar(50)
+    template boolean not null default 0
+    );
+    
+create table user_location(
+	locationId int not null,
+    username varchar(50) not null,
+    primary key(locationId, username)
+    );
+    
+create table job(
+	id int primary key auto_increment,
+    `name` varchar(25) not null,
+    template boolean not null default 0,
+    locationId int not null
     );
     
 create table request(
 	id int primary key auto_increment,
-    requestDate datetime not null,
+    locationId int not null,
+    submitDate datetime,
+	fillDate datetime,
+    notes text,
     `status` int not null default 0,
-    locationId int not null
+    `type` int not null default 0,
+    priority int not null default 0,
+    workOrder varchar(50)
     );
 
 create table item(
@@ -44,10 +62,16 @@ create table item(
     price decimal(8,2)
     );
     
+create table job_item(
+	jobId int not null,
+    itemId varchar(50) not null,
+    primary key (jobId, itemId)
+    );
+    
 create table location_item(
 	locationId int not null,
     itemId varchar(50) not null,
-    inInventory int not null default 0,
+    inInventory int,
     max int,
     min int,
     primary key(locationId, itemId)
@@ -71,11 +95,19 @@ create table item_category(
     primary key(itemId, categoryId)
     );
     
-alter table location
-	add constraint foreign key (username) references `user`(username);
+alter table job
+	add constraint foreign key (locationId) references location(id);
+    
+alter table job_item
+	add constraint foreign key (jobId) references job(id),
+    add constraint foreign key (itemId) references item(id);
     
 alter table `user`
-	add constraint foreign key (supervisor) references `user`(username);
+	add constraint foreign key (supervisorId) references `user`(username);
+    
+alter table user_location
+	add constraint foreign key (locationId) references location(id),
+    add constraint foreign key (username) references `user`(username);
 
 alter table user_role
 	add constraint foreign key (username) references `user`(username),

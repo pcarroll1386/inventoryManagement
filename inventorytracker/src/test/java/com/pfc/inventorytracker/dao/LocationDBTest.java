@@ -60,6 +60,9 @@ public class LocationDBTest {
     @Autowired
     UserDao userDao;
     
+    @Autowired
+    JobDao jobDao;
+    
     @BeforeClass
     public static void setUpClass() {
     }

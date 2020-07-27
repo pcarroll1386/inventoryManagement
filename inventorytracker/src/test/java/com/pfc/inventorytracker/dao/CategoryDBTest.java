@@ -151,7 +151,6 @@ public class CategoryDBTest {
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
-        location.setUser(user);
         location.setItems(items);
         location = locationDao.addLocation(location);
 
@@ -206,7 +205,6 @@ public class CategoryDBTest {
         Location location = new Location();
         location.setName("test location name");
         location.setDescription("test locatin description");
-        location.setUser(user);
         location.setItems(items);
         location = locationDao.addLocation(location);
 
