@@ -970,20 +970,460 @@ public class UserDBTest {
         assertTrue(users.contains(user2));
         assertFalse(users.contains(user3));
     }
-    
-     /**
+
+    /**
      * Test of getAllUsersByLocation method, of class UserDB.
      */
     @Test
-    public void testGetAllUsersByLocation(){
-        
+    public void testGetAllUsersByLocation() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        Category category = new Category();
+        category.setName("Test Category");
+        category = categoryDao.addCategory(category);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+
+        Item item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+
+        Item item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setInInventory(3);
+        item2.setMax(10);
+        item2.setMin(5);
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+        item2 = itemDao.addItem(item2);
+
+        Item item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setInInventory(3);
+        item3.setMax(10);
+        item3.setMin(5);
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+        item3 = itemDao.addItem(item3);
+
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test location description");
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+
+        Location location2 = new Location();
+        location2.setName("test location2 name");
+        location2.setDescription("test locatin2 description");
+        location2.setItems(items);
+        location2 = locationDao.addLocation(location2);
+
+        Location location3 = new Location();
+        location3.setName("test location3 name");
+        location3.setDescription("test locatin3 description");
+        location3.setItems(items);
+        location3 = locationDao.addLocation(location3);
+
+        List<Location> locations = new ArrayList<>();
+        locations.add(location);
+
+        User user = new User();
+        user.setUsername("Test supervisor");
+        user.setPassword("Test supervisor password");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user.setLocations(locations);
+        user = userDao.addUser(user);
+
+        User user2 = new User();
+        user2.setUsername("testUsername");
+        user2.setPassword("testPassword");
+        user2.setEnabled(true);
+        user2.setRoles(roles);
+        user2.setLocations(locations);
+        user2.setSupervisor(user);
+        user2 = userDao.addUser(user2);
+
+        locations.add(location2);
+        locations.add(location3);
+
+        User user3 = new User();
+        user3.setUsername("Test supervisor3");
+        user3.setPassword("Test supervisor password3");
+        user3.setEnabled(true);
+        user3.setRoles(roles);
+        user3.setLocations(locations);
+        user3 = userDao.addUser(user3);
+
+        item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+
+        item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+        item2 = itemDao.addItem(item2);
+
+        item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+        item3 = itemDao.addItem(item3);
+
+        items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Job job = new Job();
+        job.setId(0);
+        job.setName("test Name");
+        job.setLocation(location);
+        job.setItems(items);
+
+        Job job2 = new Job();
+        job.setId(1);
+        job.setName("test Name2");
+        job.setLocation(location2);
+        job.setItems(items);
+
+        Job job3 = new Job();
+        job.setId(3);
+        job.setName("test Name3");
+        job.setLocation(location3);
+        job.setItems(items);
+
+        item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+
+        item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setQuantity(7);
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+
+        item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setQuantity(7);
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+
+        items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Request request = new Request();
+        request.setSubmitDate(LocalDateTime.now().withNano(0));
+        request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setStatus(1);
+        request.setPriority(0);
+        request.setType(2);
+        request.setNotes("Test notes 1");
+        request.setItems(items);
+        request.setLocation(location);
+        request = requestDao.addRequest(request);
+
+        Request request2 = new Request();
+        request2.setSubmitDate(LocalDateTime.now().withNano(0));
+        request2.setFilledDate(LocalDateTime.now().withNano(0));
+        request2.setStatus(3);
+        request2.setPriority(3);
+        request2.setType(1);
+        request2.setItems(items);
+        request2.setLocation(location2);
+        request2 = requestDao.addRequest(request2);
+
+        Request request3 = new Request();
+        request3.setSubmitDate(LocalDateTime.now().withNano(0));
+        request3.setFilledDate(LocalDateTime.now().withNano(0));
+        request3.setStatus(3);
+        request3.setPriority(3);
+        request3.setType(1);
+        request3.setItems(items);
+        request3.setLocation(location3);
+        request3 = requestDao.addRequest(request3);
+
+        List<User> fromDao = userDao.getAllUsersByLocation(location);
+
+        assertEquals(2, fromDao.size());
+        assertTrue(fromDao.contains(user));
+        assertTrue(fromDao.contains(user2));
+        assertFalse(fromDao.contains(user3));
     }
-    
-     /**
+
+    /**
      * Test of getAllUsersBySupervisor method, of class UserDB.
      */
     @Test
-    public void testGetAllUsersBySupervisor(){
+    public void testGetAllUsersBySupervisor() {
+        Role role = new Role();
+        role.setRole("ROLE_TEST");
+        role = roleDao.addRole(role);
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+
+        Category category = new Category();
+        category.setName("Test Category");
+        category = categoryDao.addCategory(category);
+        Set<Category> categories = new HashSet<>();
+        categories.add(category);
+
+        Item item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setInInventory(3);
+        item.setMax(10);
+        item.setMin(5);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+
+        Item item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setInInventory(3);
+        item2.setMax(10);
+        item2.setMin(5);
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+        item2 = itemDao.addItem(item2);
+
+        Item item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setInInventory(3);
+        item3.setMax(10);
+        item3.setMin(5);
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+        item3 = itemDao.addItem(item3);
+
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Location location = new Location();
+        location.setName("test location name");
+        location.setDescription("test location description");
+        location.setItems(items);
+        location = locationDao.addLocation(location);
+
+        Location location2 = new Location();
+        location2.setName("test location2 name");
+        location2.setDescription("test locatin2 description");
+        location2.setItems(items);
+        location2 = locationDao.addLocation(location2);
+
+        Location location3 = new Location();
+        location3.setName("test location3 name");
+        location3.setDescription("test locatin3 description");
+        location3.setItems(items);
+        location3 = locationDao.addLocation(location3);
+
+        List<Location> locations = new ArrayList<>();
+        locations.add(location);
+        locations.add(location2);
+        locations.add(location3);
+
+        User user = new User();
+        user.setUsername("Test supervisor");
+        user.setPassword("Test supervisor password");
+        user.setEnabled(true);
+        user.setRoles(roles);
+        user.setLocations(locations);
+        user = userDao.addUser(user);
+
+        User user2 = new User();
+        user2.setUsername("testUsername");
+        user2.setPassword("testPassword");
+        user2.setEnabled(true);
+        user2.setRoles(roles);
+        user2.setLocations(locations);
+        user2.setSupervisor(user);
+        user2 = userDao.addUser(user2);
         
+        User user3 = new User();
+        user3.setUsername("Test supervisor3");
+        user3.setPassword("Test supervisor password3");
+        user3.setEnabled(true);
+        user3.setRoles(roles);
+        user3.setLocations(locations);
+        user3.setSupervisor(user);
+        user3 = userDao.addUser(user3);
+
+        item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+        item = itemDao.addItem(item);
+
+        item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+        item2 = itemDao.addItem(item2);
+
+        item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+        item3 = itemDao.addItem(item3);
+
+        items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Job job = new Job();
+        job.setId(0);
+        job.setName("test Name");
+        job.setLocation(location);
+        job.setItems(items);
+
+        Job job2 = new Job();
+        job.setId(1);
+        job.setName("test Name2");
+        job.setLocation(location2);
+        job.setItems(items);
+
+        Job job3 = new Job();
+        job.setId(3);
+        job.setName("test Name3");
+        job.setLocation(location3);
+        job.setItems(items);
+
+        item = new Item();
+        item.setId("MI0534");
+        item.setName("test itemName");
+        item.setDescription("Test Description");
+        item.setQuantity(7);
+        item.setNickname("test nickName");
+        item.setPrice(new BigDecimal("25.95"));
+        item.setCategories(categories);
+
+        item2 = new Item();
+        item2.setId("MI0535");
+        item2.setName("test itemName2");
+        item2.setDescription("Test Description2");
+        item2.setQuantity(7);
+        item2.setNickname("test nickName2");
+        item2.setPrice(new BigDecimal("25.95"));
+        item2.setCategories(categories);
+
+        item3 = new Item();
+        item3.setId("MI0536");
+        item3.setName("test itemName3");
+        item3.setDescription("Test Description3");
+        item3.setQuantity(7);
+        item3.setNickname("test nickName3");
+        item3.setPrice(new BigDecimal("25.95"));
+        item3.setCategories(categories);
+
+        items = new ArrayList<>();
+        items.add(item);
+        items.add(item2);
+        items.add(item3);
+
+        Request request = new Request();
+        request.setSubmitDate(LocalDateTime.now().withNano(0));
+        request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setStatus(1);
+        request.setPriority(0);
+        request.setType(2);
+        request.setNotes("Test notes 1");
+        request.setItems(items);
+        request.setLocation(location);
+        request = requestDao.addRequest(request);
+
+        Request request2 = new Request();
+        request2.setSubmitDate(LocalDateTime.now().withNano(0));
+        request2.setFilledDate(LocalDateTime.now().withNano(0));
+        request2.setStatus(3);
+        request2.setPriority(3);
+        request2.setType(1);
+        request2.setItems(items);
+        request2.setLocation(location2);
+        request2 = requestDao.addRequest(request2);
+
+        Request request3 = new Request();
+        request3.setSubmitDate(LocalDateTime.now().withNano(0));
+        request3.setFilledDate(LocalDateTime.now().withNano(0));
+        request3.setStatus(3);
+        request3.setPriority(3);
+        request3.setType(1);
+        request3.setItems(items);
+        request3.setLocation(location3);
+        request3 = requestDao.addRequest(request3);
+
+        List<User> fromDao = userDao.getAllBySupervisor(user);
+
+        assertEquals(2, fromDao.size());
+        assertFalse(fromDao.contains(user));
+        assertTrue(fromDao.contains(user2));
+        assertTrue(fromDao.contains(user3));
     }
 }
