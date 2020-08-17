@@ -22,5 +22,5 @@ public interface UserDao {
     void deleteUser(String username);
     List<User> getAllUsersByRole(Role role);
     List<User> getAllUsersByLocation(Location location);
-    List<User> getAllBySupervisor(User supervisor);
+    List<User> getAllBySupervisor(User user);
 }

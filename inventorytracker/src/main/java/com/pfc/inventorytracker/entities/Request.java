@@ -21,7 +21,9 @@ public class Request {
     private int status;
     private int type;
     private int priority;
+    private String workOrder;
     private Location location;
+    private User user;
     private List<Item> items;
 
     public int getId() {
@@ -80,12 +82,28 @@ public class Request {
         this.priority = priority;
     }
 
+    public String getWorkOrder() {
+        return workOrder;
+    }
+
+    public void setWorkOrder(String workOrder) {
+        this.workOrder = workOrder;
+    }
+
     public Location getLocation() {
         return location;
     }
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public List<Item> getItems() {
@@ -98,16 +116,18 @@ public class Request {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + this.id;
-        hash = 97 * hash + Objects.hashCode(this.submitDate);
-        hash = 97 * hash + Objects.hashCode(this.filledDate);
-        hash = 97 * hash + Objects.hashCode(this.notes);
-        hash = 97 * hash + this.status;
-        hash = 97 * hash + this.type;
-        hash = 97 * hash + this.priority;
-        hash = 97 * hash + Objects.hashCode(this.location);
-        hash = 97 * hash + Objects.hashCode(this.items);
+        int hash = 5;
+        hash = 59 * hash + this.id;
+        hash = 59 * hash + Objects.hashCode(this.submitDate);
+        hash = 59 * hash + Objects.hashCode(this.filledDate);
+        hash = 59 * hash + Objects.hashCode(this.notes);
+        hash = 59 * hash + this.status;
+        hash = 59 * hash + this.type;
+        hash = 59 * hash + this.priority;
+        hash = 59 * hash + Objects.hashCode(this.workOrder);
+        hash = 59 * hash + Objects.hashCode(this.location);
+        hash = 59 * hash + Objects.hashCode(this.user);
+        hash = 59 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -138,6 +158,9 @@ public class Request {
         if (!Objects.equals(this.notes, other.notes)) {
             return false;
         }
+        if (!Objects.equals(this.workOrder, other.workOrder)) {
+            return false;
+        }
         if (!Objects.equals(this.submitDate, other.submitDate)) {
             return false;
         }
@@ -147,10 +170,13 @@ public class Request {
         if (!Objects.equals(this.location, other.location)) {
             return false;
         }
+        if (!Objects.equals(this.user, other.user)) {
+            return false;
+        }
         if (!Objects.equals(this.items, other.items)) {
             return false;
         }
         return true;
     }
-    
+        
 }

@@ -41,7 +41,7 @@ public class LocationDB implements LocationDao {
     @Override
     public List<Location> getAllLocations() {
         List<Location> locations = jdbc.query("SELECT * FROM location", new LocationMapper());
-        locations = addItemsReqeustsAndUserToLocations(locations);
+        locations = addItemsToLocations(locations);
         return locations;
     }
 
@@ -59,9 +59,10 @@ public class LocationDB implements LocationDao {
     @Override
     @Transactional
     public Location addLocation(Location location) {
-        jdbc.update("INSERT INTO location(name, description, username) VALUES (?,?,?)",
+        jdbc.update("INSERT INTO location(name, description, template) VALUES (?,?,?)",
                 location.getName(),
-                location.getDescription());
+                location.getDescription(),
+                location.isTemplate());
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         location.setId(newId);
         insertLocationItems(location);
@@ -88,17 +89,11 @@ public class LocationDB implements LocationDao {
         jdbc.update("DELETE ri.* FROM request_item ri "
                 + "JOIN request r ON ri.requestId = r.id WHERE r.locationId = ?", id);
         jdbc.update("DELETE FROM request WHERE locationId = ?", id);
+        jdbc.update("DELETE FROM job WHERE locationId= ?", id);
         jdbc.update("DELETE FROM location WHERE id = ?", id);
     }
 
-    @Override
-    public List<Location> getAllLocationsByUser(User user) {
-        List<Location> locations = jdbc.query("SELECT * FROM location where username = ?", new LocationMapper(), user.getUsername());
-        locations = addItemsReqeustsAndUsersToLocations(locations);
-        return locations;
-    }
-
-    private List<Location> addItemsReqeustsAndUsersToLocations(List<Location> locations) {
+    private List<Location> addItemsToLocations(List<Location> locations) {
         for (Location location : locations) {
             location.setItems(getItemsForLocation(location));
         }
@@ -110,49 +105,28 @@ public class LocationDB implements LocationDao {
                 + "JOIN location_item li ON i.id = li.itemId WHERE li.locationId = ?",
                 new LocationItemMapper(),
                 location.getId());
-        items = getCategorysForItems(items);
+        items = getCategoriesForItems(items);
         return items;
-    }
-
-    private User getUserForLocation(Location location) {
-        try{
-        User user = jdbc.queryForObject("SELECT u.* FROM user u "
-                + "JOIN location l ON u.username = l.username WHERE l.id = ?",
-                new UserMapper(),
-                location.getId());
-        user.setRoles(getRolesForUser(user));
-        return user;
-        }catch(DataAccessException ex){
-            return null;
-        }
-    }
-
-    private List<Request> getRequestsForLocation(Location location) {
-        List<Request> requests = jdbc.query("SELECT * FROM request WHERE locationId = ?",
-                new RequestMapper(),
-                location.getId());
-        requests = getItemsForRequest(requests);
-        return requests;
     }
 
     private List<Request> getItemsForRequest(List<Request> requests) {
         for (Request r : requests) {
             List<Item> items = jdbc.query("SELECT i.*, ri.quantity FROM item i "
                     + "JOIN request_item ri ON i.id = ri.itemId WHERE requestId =?", new RequestItemMapper(), r.getId());
-            items = getCategorysForItems(items); 
+            items = getCategoriesForItems(items); 
             r.setItems(items);
         }
         return requests;
     }
 
-    private List<Item> getCategorysForItems(List<Item> items) {
+    private List<Item> getCategoriesForItems(List<Item> items) {
         for (Item i : items) {
-            i.setCategories(getCategoriesForItem(i));
+            i.setCategories(addCategoriesToItem(i));
         }
         return items;
     }
 
-    private Set<Category> getCategoriesForItem(Item i) {
+    private Set<Category> addCategoriesToItem(Item i) {
         List<Category> categories = jdbc.query("SELECT c.* FROM category c "
                 + "JOIN item_category ic ON c.id = ic.categoryId WHERE itemId = ?", new CategoryDB.CategoryMapper(), i.getId());
         Set<Category> categorySet = new HashSet<>();
@@ -160,16 +134,6 @@ public class LocationDB implements LocationDao {
             categorySet.add(c);
         }
         return categorySet;
-    }
-
-    private Set<Role> getRolesForUser(User user) {
-        List<Role> roleList = jdbc.query("SELECT r.* FROM role r "
-                + "JOIN user_role ur ON r.id = ur.roleId WHERE ur.username = ?", new RoleDB.RoleMapper(), user.getUsername());
-        Set<Role> roles = new HashSet<>();
-        for(Role role : roleList){
-            roles.add(role);
-        }
-        return roles;
     }
 
     private void insertLocationItems(Location location) {
@@ -182,7 +146,7 @@ public class LocationDB implements LocationDao {
                     item.getMin());
         }
     }
-
+    
     public static final class LocationMapper implements RowMapper<Location> {
 
         @Override
@@ -191,6 +155,7 @@ public class LocationDB implements LocationDao {
             l.setId(rs.getInt("id"));
             l.setName(rs.getString("name"));
             l.setDescription(rs.getString("description"));
+            l.setTemplate(rs.getBoolean("template"));
             return l;
         }
 

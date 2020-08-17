@@ -165,6 +165,8 @@ public class CategoryDBTest {
         user.setPassword("Test supervisor password");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user = userDao.addUser(user);
 
@@ -175,7 +177,6 @@ public class CategoryDBTest {
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
 
         items = new ArrayList<>();
         items.add(item);
@@ -200,7 +201,8 @@ public class CategoryDBTest {
 
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
-        request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setFilledDate(LocalDateTime.now().withNano(0)); 
+        request.setUser(user);
         request.setStatus(1);
         request.setPriority(0);
         request.setType(2);
@@ -270,6 +272,8 @@ public class CategoryDBTest {
         user.setPassword("Test supervisor password");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user = userDao.addUser(user);
 
@@ -280,7 +284,6 @@ public class CategoryDBTest {
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
 
         items = new ArrayList<>();
         items.add(item);
@@ -306,6 +309,7 @@ public class CategoryDBTest {
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
         request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setUser(user);
         request.setStatus(1);
         request.setPriority(0);
         request.setType(2);
@@ -372,6 +376,8 @@ public class CategoryDBTest {
         user.setPassword("Test supervisor password");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user = userDao.addUser(user);
 
@@ -382,7 +388,6 @@ public class CategoryDBTest {
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
 
         items = new ArrayList<>();
         items.add(item);
@@ -408,6 +413,7 @@ public class CategoryDBTest {
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
         request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setUser(user);
         request.setStatus(1);
         request.setPriority(0);
         request.setType(2);
@@ -481,6 +487,8 @@ public class CategoryDBTest {
         user.setPassword("Test supervisor password");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user = userDao.addUser(user);
 
@@ -491,7 +499,6 @@ public class CategoryDBTest {
         item.setNickname("test nickName");
         item.setPrice(new BigDecimal("25.95"));
         item.setCategories(categories);
-        item = itemDao.addItem(item);
 
         items = new ArrayList<>();
         items.add(item);
@@ -517,6 +524,7 @@ public class CategoryDBTest {
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
         request.setFilledDate(LocalDateTime.now().withNano(0));
+        request.setUser(user);
         request.setStatus(1);
         request.setPriority(0);
         request.setType(2);

@@ -84,6 +84,7 @@ public class ItemDB implements ItemDao {
         jdbc.update("DELETE FROM item_category WHERE itemId = ?", id);
         jdbc.update("DELETE FROM location_item WHERE itemId = ?", id);
         jdbc.update("DELETE FROM request_item WHERE itemId = ?", id);
+        jdbc.update("DELETE FROM job_item WHERE itemId = ?", id);
         jdbc.update("DELETE FROM item WHERE id=?", id);
                 
     }

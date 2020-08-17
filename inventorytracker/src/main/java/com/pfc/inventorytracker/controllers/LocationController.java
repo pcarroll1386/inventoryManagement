@@ -43,12 +43,4 @@ public class LocationController {
     @Autowired
     UserDao userDao;
     
-    @GetMapping("inventory")
-    public String inventoryPage(String username, Model model){
-        User user = userDao.getUserByUsername(username);
-        List<Location> locations = locationDao.getAllLocationsByUser(user);
-        model.addAttribute("locations", locations);
-        return "inventory";
-    }
-    
 }

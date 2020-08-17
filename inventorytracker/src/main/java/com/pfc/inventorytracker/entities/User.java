@@ -18,8 +18,10 @@ public class User {
     private String password;
     private boolean enabled;
     private User supervisor;
+    private int employeeNumber;
+    private String name;
     private List<Location> locations;
-    private Set<Role> roles;  
+    private Set<Role> roles; 
 
     public String getUsername() {
         return username;
@@ -53,6 +55,22 @@ public class User {
         this.supervisor = supervisor;
     }
 
+    public int getEmployeeNumber() {
+        return employeeNumber;
+    }
+
+    public void setEmployeeNumber(int employeeNumber) {
+        this.employeeNumber = employeeNumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<Location> getLocations() {
         return locations;
     }
@@ -72,12 +90,14 @@ public class User {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.username);
-        hash = 37 * hash + Objects.hashCode(this.password);
-        hash = 37 * hash + (this.enabled ? 1 : 0);
-        hash = 37 * hash + Objects.hashCode(this.supervisor);
-        hash = 37 * hash + Objects.hashCode(this.locations);
-        hash = 37 * hash + Objects.hashCode(this.roles);
+        hash = 53 * hash + Objects.hashCode(this.username);
+        hash = 53 * hash + Objects.hashCode(this.password);
+        hash = 53 * hash + (this.enabled ? 1 : 0);
+        hash = 53 * hash + Objects.hashCode(this.supervisor);
+        hash = 53 * hash + this.employeeNumber;
+        hash = 53 * hash + Objects.hashCode(this.name);
+        hash = 53 * hash + Objects.hashCode(this.locations);
+        hash = 53 * hash + Objects.hashCode(this.roles);
         return hash;
     }
 
@@ -96,10 +116,16 @@ public class User {
         if (this.enabled != other.enabled) {
             return false;
         }
+        if (this.employeeNumber != other.employeeNumber) {
+            return false;
+        }
         if (!Objects.equals(this.username, other.username)) {
             return false;
         }
         if (!Objects.equals(this.password, other.password)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         if (!Objects.equals(this.supervisor, other.supervisor)) {
@@ -113,6 +139,5 @@ public class User {
         }
         return true;
     }
-    
-    
+     
 }

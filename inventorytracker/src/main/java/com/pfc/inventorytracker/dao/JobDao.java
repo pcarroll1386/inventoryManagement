@@ -19,4 +19,5 @@ public interface JobDao {
     Job addJob(Job job);
     void updateJob(Job job);
     void deleteJob(int id);
+    List<Job> getAllJobsForLocation(Location location);
 }

@@ -6,9 +6,13 @@
 package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.dao.ItemDB.RequestItemMapper;
+import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
+import com.pfc.inventorytracker.dao.UserDB.UserMapper;
 import com.pfc.inventorytracker.entities.Category;
 import com.pfc.inventorytracker.entities.Item;
+import com.pfc.inventorytracker.entities.Location;
 import com.pfc.inventorytracker.entities.Request;
+import com.pfc.inventorytracker.entities.Role;
 import com.pfc.inventorytracker.entities.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +40,7 @@ public class RequestDB implements RequestDao {
     public List<Request> getAllRequests() {
         List<Request> requests = jdbc.query("SELECT * FROM request", new RequestMapper());
         requests = addItemsForRequests(requests);
+        requests = addLocationAndUserToRequests(requests);
         return requests;
     }
 
@@ -44,6 +49,8 @@ public class RequestDB implements RequestDao {
         try {
             Request request = jdbc.queryForObject("SELECT * FROM request WHERE id = ?", new RequestMapper(), id);
             request.setItems(getItemsForRequest(request));
+            request.setLocation(getLocationForRequest(request));
+            request.setUser(getUserForRequest(request));
             return request;
         } catch (DataAccessException ex) {
             return null;
@@ -53,10 +60,17 @@ public class RequestDB implements RequestDao {
     @Override
     @Transactional
     public Request addRequest(Request request) {
-        jdbc.update("INSERT INTO request(requestDate, status, locationId) VALUES(?,?,?)",
-                request.getRequestDate(),
+        jdbc.update("INSERT INTO request(locationId, username, submitDate, fillDate, notes, status, type, priority, workOrder) VALUES(?,?,?,?,?,?,?,?,?)",
+                request.getLocation().getId(),
+                request.getUser().getUsername(),
+                request.getSubmitDate(),
+                request.getFilledDate(),
+                request.getNotes(),
                 request.getStatus(),
-                request.getLocationId());
+                request.getType(),
+                request.getPriority(),
+                request.getWorkOrder());
+                
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         request.setId(newId);
         insertRequestItems(request);
@@ -66,13 +80,18 @@ public class RequestDB implements RequestDao {
     @Override
     @Transactional
     public void updateRequest(Request request) {
-        jdbc.update("UPDATE request SET requestDate = ?, status = ?, locationId = ? WHERE  id = ?",
-                request.getRequestDate(),
+        jdbc.update("UPDATE request SET locationId = ?, username = ?, submitDate = ?, fillDate = ?, notes = ?, status = ?, type = ?, priority = ?, workOrder = ? WHERE  id = ?",
+                request.getLocation().getId(),
+                request.getUser().getUsername(),
+                request.getSubmitDate(),
+                request.getFilledDate(),
+                request.getNotes(),
                 request.getStatus(),
-                request.getLocationId(),
+                request.getType(),
+                request.getPriority(),
+                request.getWorkOrder(),
                 request.getId());
-        jdbc.update("DELETE FROM request_item WHERE requestId = ?",
-                request.getId());
+        jdbc.update("DELETE FROM request_item WHERE requestId = ?", request.getId());
         insertRequestItems(request);
     }
 
@@ -85,9 +104,17 @@ public class RequestDB implements RequestDao {
 
     @Override
     public List<Request> getAllRequestsByUser(User user) {
-        List<Request> requests = jdbc.query("SELECT r.* FROM request r "
-                + "JOIN location l ON r.locationId = l.id WHERE username = ?", new RequestMapper(), user.getUsername());
+        List<Request> requests = jdbc.query("SELECT * FROM request WHERE username = ?", new RequestMapper(), user.getUsername());
         requests = addItemsForRequests(requests);
+        requests = addLocationAndUserToRequests(requests);
+        return requests;
+    }
+
+    @Override
+    public List<Request> getAllRequestsByLocation(Location location) {
+        List<Request> requests = jdbc.query("SELECT * FROM requests WHERE locationId = ?", new RequestMapper(), location.getId());
+        requests = addItemsForRequests(requests);
+        requests = addLocationAndUserToRequests(requests);
         return requests;
     }
 
@@ -128,15 +155,106 @@ public class RequestDB implements RequestDao {
                 item.getQuantity());
         }
     }
+
+    private List<Request> addLocationAndUserToRequests(List<Request> requests) {
+        for(Request request : requests){
+            request.setLocation(getLocationForRequest(request));
+            request.setUser(getUserForRequest(request));
+        }
+        return requests;
+    }
+
+    private Location getLocationForRequest(Request request) {
+        Location location = jdbc.queryForObject("SELECT l.* FROM location l "
+                + "JOIN request r ON l.id = r.locationId WHERE r.id = ?", new LocationMapper(), request.getId());
+        location.setItems(getItemsForLocation(location));
+        return location;
+    }
+    
+    private List<Item> getItemsForLocation(Location location) {
+        List<Item> items = jdbc.query("SELECT i.*, li.inInventory, li.max, li.min FROM item i "
+                + "JOIN location_item li ON i.id = li.itemId WHERE li.locationId = ?",
+                new ItemDB.LocationItemMapper(),
+                location.getId());
+        items = getCategorysForItems(items);
+        return items;
+    }
+    
+     private List<Item> getCategorysForItems(List<Item> items) {
+        for (Item i : items) {
+            i.setCategories(getCategoriesForItem(i));
+        }
+        return items;
+    }
+     
+     private Set<Category> getCategoriesForItem(Item i) {
+        List<Category> categories = jdbc.query("SELECT c.* FROM category c "
+                + "JOIN item_category ic ON c.id = ic.categoryId WHERE itemId = ?", new CategoryDB.CategoryMapper(), i.getId());
+        Set<Category> categorySet = new HashSet<>();
+        for (Category c : categories) {
+            categorySet.add(c);
+        }
+        return categorySet;
+    }
+
+    private User getUserForRequest(Request request) {
+        User user = jdbc.queryForObject("SELECT u.* FROM user u "
+                + "JOIN request r ON u.username = r.username WHERE r.id = ?", new UserMapper(), request.getId());
+        user = addRolesLocationAndSupervisorToUsers(user);
+        return user;
+    }
+    
+    private User addRolesLocationAndSupervisorToUsers(User user) {
+            user.setRoles(getRolesForUser(user));
+            user.setLocations(getLocationsforUser(user));
+            user.setSupervisor(getSupervisorForUser(user));
+        return user;
+    }
+
+    private Set<Role> getRolesForUser(User user) {
+        List<Role> roleList = jdbc.query("SELECT r.* FROM role r "
+                + "JOIN user_role ur ON r.id = ur.roleId WHERE ur.username = ?", new RoleDB.RoleMapper(), user.getUsername());
+        Set<Role> roles = new HashSet<>();
+        for (Role role : roleList) {
+            roles.add(role);
+        }
+        return roles;
+    }
+
+    private List<Location> getLocationsforUser(User user) {
+        List<Location> locations = jdbc.query("SELECT l.* FROM location l "
+                + "JOIN user_location ul ON l.id = ul.locationId WHERE ul.username = ?", new LocationMapper(), user.getUsername());   
+        for(Location l : locations){
+            l.setItems(getItemsForLocation(l));
+        }
+        return locations;
+    }
+
+    private User getSupervisorForUser(User user) {
+        User supervisor = new User();
+        try {
+            supervisor = jdbc.queryForObject("SELECT u.* FROM user u "
+                    + "JOIN user p ON u.username = p.supervisorId WHERE p.username= ?", new UserMapper(), user.getUsername());
+            supervisor.setRoles(getRolesForUser(supervisor));
+        } catch (DataAccessException ex) {
+            return null;
+        }
+        return supervisor;
+    }
+    
     public static final class RequestMapper implements RowMapper<Request> {
 
         @Override
         public Request mapRow(ResultSet rs, int arg1) throws SQLException {
             Request r = new Request();
             r.setId(rs.getInt("id"));
-            r.setRequestDate(rs.getTimestamp("requestDate").toLocalDateTime());
+            r.setSubmitDate(rs.getTimestamp("submitDate").toLocalDateTime());
+            r.setFilledDate(rs.getTimestamp("fillDate").toLocalDateTime());
+            r.setNotes(rs.getString("notes"));
             r.setStatus(rs.getInt("status"));
-            r.setLocationId(rs.getInt("locationId"));
+            r.setType(rs.getInt("type"));
+            r.setPriority(rs.getInt("priority"));
+            r.setWorkOrder(rs.getString("workOrder"));
             return r;
         }
 

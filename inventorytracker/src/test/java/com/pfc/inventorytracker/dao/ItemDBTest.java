@@ -126,6 +126,8 @@ public class ItemDBTest {
         user.setPassword("testPassword");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user = userDao.addUser(user);
 
         Category category = new Category();
@@ -186,6 +188,8 @@ public class ItemDBTest {
         user.setPassword("testPassword");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user = userDao.addUser(user);
 
         Category category = new Category();
@@ -234,15 +238,19 @@ public class ItemDBTest {
         item.setCategories(categories);
         item = itemDao.addItem(item);
 
-        Item item2 = item;
-        
-        
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
+        Item locationItem = new Item();
+        locationItem.setId("MI0534");
+        locationItem.setName("test itemName");
+        locationItem.setDescription("Test Description");
+        locationItem.setNickname("test nickName");
+        locationItem.setPrice(new BigDecimal("25.95"));
+        locationItem.setCategories(categories);  
+        locationItem.setInInventory(3);
+        locationItem.setMax(10);
+        locationItem.setMin(5);
 
         List<Item> items = new ArrayList<>();
-        items.add(item);
+        items.add(locationItem);
 
         Location location = new Location();
         location.setName("test location name");
@@ -272,6 +280,8 @@ public class ItemDBTest {
         supervisor.setPassword("Test supervisor password");
         supervisor.setEnabled(true);
         supervisor.setRoles(roles);
+        supervisor.setName("test name");
+        supervisor.setEmployeeNumber(318);
         supervisor = userDao.addUser(supervisor);
 
         User user = new User();
@@ -279,39 +289,41 @@ public class ItemDBTest {
         user.setPassword("testPassword");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user.setSupervisor(supervisor);
         user = userDao.addUser(user);
 
-        item = new Item();
-        item.setId("MI0534");
-        item.setName("test itemName");
-        item.setDescription("Test Description");
-        item.setNickname("test nickName");
-        item.setPrice(new BigDecimal("25.95"));
-        item.setCategories(categories);
-        item = itemDao.addItem(item);
+        Item jobItem = new Item();
+        jobItem.setId("MI0534");
+        jobItem.setName("test itemName");
+        jobItem.setDescription("Test Description");
+        jobItem.setNickname("test nickName");
+        jobItem.setPrice(new BigDecimal("25.95"));
+        jobItem.setCategories(categories);
 
         items = new ArrayList<>();
-        items.add(item);
+        items.add(jobItem);
 
         Job job = new Job();
         job.setId(0);
         job.setName("test Name");
         job.setLocation(location);
         job.setItems(items);
+        jobDao.addJob(job);
 
-        item = new Item();
-        item.setId("MI0534");
-        item.setName("test itemName");
-        item.setDescription("Test Description");
-        item.setQuantity(7);
-        item.setNickname("test nickName");
-        item.setPrice(new BigDecimal("25.95"));
-        item.setCategories(categories);
+        Item RequestIitem = new Item();
+        RequestIitem.setId("MI0534");
+        RequestIitem.setName("test itemName");
+        RequestIitem.setDescription("Test Description");
+        RequestIitem.setQuantity(7);
+        RequestIitem.setNickname("test nickName");
+        RequestIitem.setPrice(new BigDecimal("25.95"));
+        RequestIitem.setCategories(categories);
 
         items = new ArrayList<>();
-        items.add(item);
+        items.add(RequestIitem);
 
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
@@ -322,10 +334,11 @@ public class ItemDBTest {
         request.setNotes("Test notes 1");
         request.setItems(items);
         request.setLocation(location);
+        request.setUser(user);
         request = requestDao.addRequest(request);
 
         Item fromDao = itemDao.getItemById(item.getId());
-        assertEquals(item2, fromDao);
+        assertEquals(item, fromDao);
 
         Category category2 = new Category();
         category2.setName("Test name 2");
@@ -350,7 +363,7 @@ public class ItemDBTest {
      */
     @Test
     public void testDeleteItem() {
-        Role role = new Role();
+       Role role = new Role();
         role.setRole("ROLE_TEST");
         role = roleDao.addRole(role);
         Set<Role> roles = new HashSet<>();
@@ -371,14 +384,19 @@ public class ItemDBTest {
         item.setCategories(categories);
         item = itemDao.addItem(item);
 
-        Item item2 = item;        
-        
-        item.setInInventory(3);
-        item.setMax(10);
-        item.setMin(5);
+        Item locationItem = new Item();
+        locationItem.setId("MI0534");
+        locationItem.setName("test itemName");
+        locationItem.setDescription("Test Description");
+        locationItem.setNickname("test nickName");
+        locationItem.setPrice(new BigDecimal("25.95"));
+        locationItem.setCategories(categories);  
+        locationItem.setInInventory(3);
+        locationItem.setMax(10);
+        locationItem.setMin(5);
 
         List<Item> items = new ArrayList<>();
-        items.add(item);
+        items.add(locationItem);
 
         Location location = new Location();
         location.setName("test location name");
@@ -408,6 +426,8 @@ public class ItemDBTest {
         supervisor.setPassword("Test supervisor password");
         supervisor.setEnabled(true);
         supervisor.setRoles(roles);
+        supervisor.setName("test name");
+        supervisor.setEmployeeNumber(318);
         supervisor = userDao.addUser(supervisor);
 
         User user = new User();
@@ -415,39 +435,41 @@ public class ItemDBTest {
         user.setPassword("testPassword");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user.setLocations(locations);
         user.setSupervisor(supervisor);
         user = userDao.addUser(user);
 
-        item = new Item();
-        item.setId("MI0534");
-        item.setName("test itemName");
-        item.setDescription("Test Description");
-        item.setNickname("test nickName");
-        item.setPrice(new BigDecimal("25.95"));
-        item.setCategories(categories);
-        item = itemDao.addItem(item);
+        Item jobItem = new Item();
+        jobItem.setId("MI0534");
+        jobItem.setName("test itemName");
+        jobItem.setDescription("Test Description");
+        jobItem.setNickname("test nickName");
+        jobItem.setPrice(new BigDecimal("25.95"));
+        jobItem.setCategories(categories);
 
         items = new ArrayList<>();
-        items.add(item);
+        items.add(jobItem);
 
         Job job = new Job();
         job.setId(0);
         job.setName("test Name");
         job.setLocation(location);
         job.setItems(items);
+        jobDao.addJob(job);
 
-        item = new Item();
-        item.setId("MI0534");
-        item.setName("test itemName");
-        item.setDescription("Test Description");
-        item.setQuantity(7);
-        item.setNickname("test nickName");
-        item.setPrice(new BigDecimal("25.95"));
-        item.setCategories(categories);
+        Item RequestIitem = new Item();
+        RequestIitem.setId("MI0534");
+        RequestIitem.setName("test itemName");
+        RequestIitem.setDescription("Test Description");
+        RequestIitem.setQuantity(7);
+        RequestIitem.setNickname("test nickName");
+        RequestIitem.setPrice(new BigDecimal("25.95"));
+        RequestIitem.setCategories(categories);
 
         items = new ArrayList<>();
-        items.add(item);
+        items.add(RequestIitem);
 
         Request request = new Request();
         request.setSubmitDate(LocalDateTime.now().withNano(0));
@@ -458,10 +480,11 @@ public class ItemDBTest {
         request.setNotes("Test notes 1");
         request.setItems(items);
         request.setLocation(location);
+        request.setUser(user);
         request = requestDao.addRequest(request);
 
         Item fromDao = itemDao.getItemById(item.getId());
-        assertEquals(item2, fromDao);
+        assertEquals(item, fromDao);
 
         itemDao.deleteItemById(item.getId());
 
@@ -486,6 +509,8 @@ public class ItemDBTest {
         user.setPassword("testPassword");
         user.setEnabled(true);
         user.setRoles(roles);
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user = userDao.addUser(user);
 
         Category category = new Category();

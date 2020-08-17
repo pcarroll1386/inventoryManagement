@@ -125,7 +125,9 @@ public class RoleDBTest {
         user.setUsername("test username");
         user.setPassword("test password");
         user.setEnabled(true);
-        user.setRoles(roles);        
+        user.setRoles(roles); 
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user = userDao.addUser(user);
         
         List<Role> fromDao = roleDao.getAllRoles();
@@ -187,7 +189,9 @@ public class RoleDBTest {
         user.setUsername("test username");
         user.setPassword("test password");
         user.setEnabled(true);
-        user.setRoles(roles);        
+        user.setRoles(roles);   
+        user.setName("test name");
+        user.setEmployeeNumber(318);
         user = userDao.addUser(user);
         
         roleDao.deleteRole(role.getId());

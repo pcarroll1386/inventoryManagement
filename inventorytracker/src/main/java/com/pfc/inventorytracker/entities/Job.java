@@ -17,6 +17,7 @@ public class Job {
     private int id;
     private Location location;
     private String name;
+    private boolean template;
     private List<Item> items;
 
     public int getId() {
@@ -43,6 +44,14 @@ public class Job {
         this.name = name;
     }
 
+    public boolean isTemplate() {
+        return template;
+    }
+
+    public void setTemplate(boolean template) {
+        this.template = template;
+    }
+
     public List<Item> getItems() {
         return items;
     }
@@ -53,11 +62,12 @@ public class Job {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 13 * hash + this.id;
-        hash = 13 * hash + Objects.hashCode(this.location);
-        hash = 13 * hash + Objects.hashCode(this.name);
-        hash = 13 * hash + Objects.hashCode(this.items);
+        int hash = 5;
+        hash = 17 * hash + this.id;
+        hash = 17 * hash + Objects.hashCode(this.location);
+        hash = 17 * hash + Objects.hashCode(this.name);
+        hash = 17 * hash + (this.template ? 1 : 0);
+        hash = 17 * hash + Objects.hashCode(this.items);
         return hash;
     }
 
@@ -76,6 +86,9 @@ public class Job {
         if (this.id != other.id) {
             return false;
         }
+        if (this.template != other.template) {
+            return false;
+        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
@@ -86,6 +99,14 @@ public class Job {
             return false;
         }
         return true;
+    }
+
+    public void insertLocation(Job job) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void insertItems(Job job) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

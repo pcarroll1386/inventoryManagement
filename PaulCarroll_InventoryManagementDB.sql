@@ -8,7 +8,9 @@ create table user(
 	username varchar(50) primary key not null,
     `password` varchar(150) not null,
     enabled boolean not null default 1,
-    supervisorId varchar(50)
+    supervisorId varchar(50),
+    employeeNumber int not null,
+    `name` varchar(50) not null
     );
     
 create table `role`(
@@ -45,6 +47,7 @@ create table job(
 create table request(
 	id int primary key auto_increment,
     locationId int not null,
+    username varchar(50) not null,
     submitDate datetime,
 	fillDate datetime,
     notes text,
@@ -114,7 +117,8 @@ alter table user_role
 	add constraint foreign key (roleId) references `role`(id);
     
 alter table request
-	add constraint foreign key (locationId) references location(id);
+	add constraint foreign key (locationId) references location(id),
+    add constraint foreign key (username) references `user`(username);
     
 alter table location_item
 	add constraint foreign key (locationId) references location(id),
