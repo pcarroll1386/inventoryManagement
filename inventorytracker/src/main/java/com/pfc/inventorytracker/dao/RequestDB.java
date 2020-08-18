@@ -227,6 +227,9 @@ public class RequestDB implements RequestDao {
         for(Location l : locations){
             l.setItems(getItemsForLocation(l));
         }
+        if(locations.size() == 0){
+            return null;
+        }
         return locations;
     }
 
@@ -236,6 +239,8 @@ public class RequestDB implements RequestDao {
             supervisor = jdbc.queryForObject("SELECT u.* FROM user u "
                     + "JOIN user p ON u.username = p.supervisorId WHERE p.username= ?", new UserMapper(), user.getUsername());
             supervisor.setRoles(getRolesForUser(supervisor));
+            supervisor.setSupervisor(getSupervisorForUser(supervisor));
+            supervisor.setLocations(getLocationsforUser(supervisor));
         } catch (DataAccessException ex) {
             return null;
         }

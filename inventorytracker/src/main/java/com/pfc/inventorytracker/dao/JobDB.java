@@ -7,12 +7,15 @@ package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.dao.ItemDB.ItemMapper;
 import com.pfc.inventorytracker.dao.LocationDB.LocationMapper;
+import com.pfc.inventorytracker.entities.Category;
 import com.pfc.inventorytracker.entities.Item;
 import com.pfc.inventorytracker.entities.Job;
 import com.pfc.inventorytracker.entities.Location;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -66,20 +69,20 @@ public class JobDB implements JobDao{
     @Override
     @Transactional
     public void updateJob(Job job) {
-        jdbc.update("DELETE * FROM job_item WHERE jobId = ?", job.getId());
         jdbc.update("UPDATE job SET locationId = ?, name = ?, template = ? WHERE id = ?",
-                job.getLocation(),
+                job.getLocation().getId(),
                 job.getName(),
                 job.isTemplate(),
                 job.getId());
+        jdbc.update("DELETE FROM job_item WHERE jobId = ?", job.getId());
         insertJobItems(job);
     }
 
     @Override
     @Transactional
     public void deleteJob(int id) {
-        jdbc.update("DELETE * FROM job_item WHERE jobId = ?", id);
-        jdbc.update("DELETE * FROM job WHERE id = ?", id);
+        jdbc.update("DELETE FROM job_item WHERE jobId = ?", id);
+        jdbc.update("DELETE FROM job WHERE id = ?", id);
     }
 
     @Override
@@ -100,12 +103,39 @@ public class JobDB implements JobDao{
     private Location getLocationForJob(Job job) {
         Location location = jdbc.queryForObject("SELECT l.* FROM location l "
                 + "JOIN job j ON l.id = j.locationID WHERE j.id = ?", new LocationMapper(), job.getId());
+        location.setItems(getItemsForLocation(location));
         return location;
+    }
+    private List<Item> getItemsForLocation(Location location) {
+        List<Item> items = jdbc.query("SELECT i.*, li.inInventory, li.max, li.min FROM item i "
+                + "JOIN location_item li ON i.id = li.itemId WHERE li.locationId = ?",
+                new ItemDB.LocationItemMapper(),
+                location.getId());
+        items = getCategoriesForItems(items);
+        return items;
+    }
+    
+    private List<Item> getCategoriesForItems(List<Item> items) {
+        for (Item i : items) {
+            i.setCategories(addCategoriesToItem(i));
+        }
+        return items;
+    }
+    
+    private Set<Category> addCategoriesToItem(Item i) {
+        List<Category> categories = jdbc.query("SELECT c.* FROM category c "
+                + "JOIN item_category ic ON c.id = ic.categoryId WHERE itemId = ?", new CategoryDB.CategoryMapper(), i.getId());
+        Set<Category> categorySet = new HashSet<>();
+        for (Category c : categories) {
+            categorySet.add(c);
+        }
+        return categorySet;
     }
 
     private List<Item> getItemsForJob(Job job) {
         List<Item> items = jdbc.query("SELECT i.* FROM item i "
                 + "JOIN job_item ji ON i.id = ji.itemId WHERE  ji.jobId = ?", new ItemMapper(), job.getId());
+        items = getCategoriesForItems(items);
         return items;
     }
 

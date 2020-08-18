@@ -197,6 +197,8 @@ public class UserDBTest {
         user.setRoles(roles);
         user.setName("test name");
         user.setEmployeeNumber(318);
+//        List<Location> emptyLocation = new ArrayList<>();
+//        user.setLocations(emptyLocation);
         user = userDao.addUser(user);
 
         User user2 = new User();
@@ -1177,9 +1179,10 @@ public class UserDBTest {
         user2.setLocations(locations);
         user2.setSupervisor(user);
         user2 = userDao.addUser(user2);
-
-        locations.add(location2);
-        locations.add(location3);
+        
+        List<Location> newLocations = new ArrayList<>();
+        newLocations.add(location2);
+        newLocations.add(location3);
 
         User user3 = new User();
         user3.setUsername("Test supervisor3");
@@ -1188,7 +1191,7 @@ public class UserDBTest {
         user3.setRoles(roles);
         user3.setName("test name 3");
         user3.setEmployeeNumber(320);
-        user3.setLocations(locations);
+        user3.setLocations(newLocations);
         user3 = userDao.addUser(user3);
 
        Item jobItem = new Item();

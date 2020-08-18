@@ -153,6 +153,9 @@ public class UserDB implements UserDao {
         List<Location> locations = jdbc.query("SELECT l.* FROM location l "
                 + "JOIN user_location ul ON l.id = ul.locationId WHERE ul.username = ?", new LocationMapper(), user.getUsername());
         locations = addItemsToLocations(locations);
+        if(locations.size() == 0){
+            return null;
+        }
         return locations;
     }
     
@@ -178,6 +181,8 @@ public class UserDB implements UserDao {
             supervisor = jdbc.queryForObject("SELECT u.* FROM user u "
                     + "JOIN user p ON u.username = p.supervisorId WHERE p.username= ?", new UserMapper(), user.getUsername());
             supervisor.setRoles(getRolesForUser(supervisor));
+            supervisor.setSupervisor(getSupervisorForUser(supervisor));
+            supervisor.setLocations(getLocationsforUser(supervisor));
         } catch (DataAccessException ex) {
             return null;
         }
