@@ -6,7 +6,6 @@
 package com.pfc.inventorytracker.dao;
 
 import com.pfc.inventorytracker.entities.Location;
-import com.pfc.inventorytracker.entities.User;
 import java.util.List;
 
 /**
