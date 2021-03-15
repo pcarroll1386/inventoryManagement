@@ -18,6 +18,11 @@ public class Item {
     private String name;
     private String nickname;
     private String description;
+    private int inInventory;
+    private int min;
+    private int max;
+    private int quantity;
+    private Set<String> serialNumbers;
     private BigDecimal price;
     private Set<Category> categories;
 
@@ -51,6 +56,46 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public int getInInventory() {
+        return inInventory;
+    }
+
+    public void setInInventory(int inInventory) {
+        this.inInventory = inInventory;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Set<String> getSerialNumbers() {
+        return serialNumbers;
+    }
+
+    public void setSeirialNumbers(Set<String> serialNumbers) {
+        this.serialNumbers = serialNumbers;
     }
 
     public BigDecimal getPrice() {
