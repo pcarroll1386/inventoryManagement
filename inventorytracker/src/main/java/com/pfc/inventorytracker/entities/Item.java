@@ -19,10 +19,6 @@ public class Item {
     private String nickname;
     private String description;
     private BigDecimal price;
-    private int inInventory;
-    private int min;
-    private int max;
-    private int quantity;
     private Set<Category> categories;
 
     public String getId() {
@@ -65,38 +61,6 @@ public class Item {
         this.price = price;
     }
 
-    public int getInInventory() {
-        return inInventory;
-    }
-
-    public void setInInventory(int inInventory) {
-        this.inInventory = inInventory;
-    }
-
-    public int getMin() {
-        return min;
-    }
-
-    public void setMin(int min) {
-        this.min = min;
-    }
-
-    public int getMax() {
-        return max;
-    }
-
-    public void setMax(int max) {
-        this.max = max;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public Set<Category> getCategories() {
         return categories;
     }
@@ -113,10 +77,6 @@ public class Item {
         hash = 37 * hash + Objects.hashCode(this.nickname);
         hash = 37 * hash + Objects.hashCode(this.description);
         hash = 37 * hash + Objects.hashCode(this.price);
-        hash = 37 * hash + this.inInventory;
-        hash = 37 * hash + this.min;
-        hash = 37 * hash + this.max;
-        hash = 37 * hash + this.quantity;
         hash = 37 * hash + Objects.hashCode(this.categories);
         return hash;
     }
@@ -133,18 +93,6 @@ public class Item {
             return false;
         }
         final Item other = (Item) obj;
-        if (this.inInventory != other.inInventory) {
-            return false;
-        }
-        if (this.min != other.min) {
-            return false;
-        }
-        if (this.max != other.max) {
-            return false;
-        }
-        if (this.quantity != other.quantity) {
-            return false;
-        }
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
