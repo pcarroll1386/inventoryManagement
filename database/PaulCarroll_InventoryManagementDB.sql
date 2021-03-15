@@ -1,176 +1,157 @@
-drop database if exists inventorymanagementdbtest;
+DROP DATABASE IF EXISTS `inventorydb`;
 
-create database inventorymanagementdbtest;
+CREATE DATABASE `inventorydb`;
 
-use inventorymanagementdbtest;
+USE 'inventorydb';
 
-create table user(
-    username varchar(50) primary key not null,
-    `password` varchar(150) not null,
-    enabled boolean not null default 1,
-    supervisorId varchar(50),
-    employeeNumber int not null,
-    `name` varchar(50) not null
+CREATE TABLE user(
+    username VARCHAR(50) PRIMARY KEY NOT NULL,
+    `password` VARCHAR(150) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT 1,
+    supervisorId VARCHAR(50),
+    employeeNumber INT NOT NULL,
+    `name` VARCHAR(50) NOT NULL
 );
 
-create table `role`(
-    id int primary key auto_increment,
-    `role` varchar(50)
+CREATE TABLE `role`(
+    id INT PRIMARY KEY auto_increment,
+    `role` VARCHAR(50)
 );
 
-create table user_role(
-    username varchar(50) not null,
-    roleId int not null,
-    primary key(username, roleId)
+CREATE TABLE user_role(
+    username VARCHAR(50) NOT NULL,
+    roleId INT NOT NULL,
+    PRIMARY KEY (username, roleId)
 );
 
-create table location(
-    id int primary key auto_increment,
-    `name` varchar(50) not null,
-    `description` varchar(50),
-    template boolean not null default 0
+CREATE TABLE location(
+    id INT PRIMARY KEY auto_increment,
+    `name` VARCHAR(50) NOT NULL,
+    `description` VARCHAR(50),
+    template BOOLEAN NOT NULL DEFAULT 0
 );
 
-create table user_location(
-    locationId int not null,
-    username varchar(50) not null,
-    primary key(locationId, username)
+CREATE TABLE user_location(
+    locationId INT NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    PRIMARY KEY (locationId, username)
 );
 
-create table job(
-    id int primary key auto_increment,
-    `name` varchar(25) not null,
-    template boolean not null default 0,
-    locationId int not null
+CREATE TABLE job(
+    id INT PRIMARY KEY auto_increment,
+    `name` VARCHAR(25) NOT NULL,
+    template BOOLEAN NOT NULL DEFAULT 0,
+    locationId INT NOT NULL
 );
 
-create table request(
-    id int primary key auto_increment,
-    locationId int not null,
-    username varchar(50) not null,
+CREATE TABLE request(
+    id INT PRIMARY KEY auto_increment,
+    locationId INT NOT NULL,
+    username VARCHAR(50) NOT NULL,
     submitDate datetime,
     fillDate datetime,
-    notes text,
-    `status` int not null default 0,
-    `type` int not null default 0,
-    priority int not null default 0,
-    workOrder varchar(50)
+    notes TEXT,
+    `status` INT NOT NULL DEFAULT 0,
+    `type` INT NOT NULL DEFAULT 0,
+    priority INT NOT NULL DEFAULT 0,
+    workOrder VARCHAR(50)
 );
 
-create table item(
-    id varchar(50) primary key,
-    `name` varchar(50) not null,
-    nickname varchar(50),
-    `description` varchar(200) not null,
+CREATE TABLE item(
+    id VARCHAR(50) PRIMARY KEY ,
+    `name` VARCHAR(50) NOT NULL,
+    nickname VARCHAR(50),
+    `description` VARCHAR(200) NOT NULL,
     price decimal(8, 2)
 );
 
-create table job_item(
-    jobId int not null,
-    itemId varchar(50) not null,
-    primary key (jobId, itemId)
+CREATE TABLE job_item(
+    jobId INT NOT NULL,
+    itemId VARCHAR(50) NOT NULL,
+    PRIMARY KEY (jobId, itemId)
 );
 
-create table serial_number (
-    id varchar(255) primary key auto_increment,
+CREATE TABLE serial_number(
+    id VARCHAR(255) PRIMARY KEY
 );
 
-create table location_item(
-    id int primary key auto_increment,
-    locationId int not null,
-    itemId varchar(50) not null,
-    inInventory int,
-    max int,
-    min int,
-    primary key(locationId, itemId)
+CREATE TABLE location_item(
+    id INT PRIMARY KEY auto_increment,
+    locationId INT NOT NULL,
+    itemId VARCHAR(50) NOT NULL,
+    inInventory INT,
+    max INT,
+    min INT
 );
 
-create table item_serial_number (
-    locationItemId int not null,
-    serialNumberId varchar(255) not null,
-    primary key(locationItemId, serialNumberId)
+CREATE TABLE item_serial_number (
+    locationItemId INT NOT NULL,
+    serialNumberId VARCHAR(255) NOT NULL,
+    PRIMARY KEY (locationItemId, serialNumberId)
 );
 
-create table request_item(
-    requestId int not null,
-    itemId varchar(50) not null,
-    quantity int,
-    primary key(requestId, itemId)
+CREATE TABLE request_item(
+    requestId INT NOT NULL,
+    itemId VARCHAR(50) NOT NULL,
+    quantity INT,
+    PRIMARY KEY (requestId, itemId)
 );
 
-create table category(
-    id int primary key auto_increment,
-    `name` varchar(50) not null
+CREATE TABLE category(
+    id INT PRIMARY KEY auto_increment,
+    `name` VARCHAR(50) NOT NULL
 );
 
-create table item_category(
-    itemId varchar(50) not null,
-    categoryId int not null,
-    primary key(itemId, categoryId)
+CREATE TABLE item_category(
+    itemId VARCHAR(50) NOT NULL,
+    categoryId INT NOT NULL,
+    PRIMARY KEY (itemId, categoryId)
 );
 
-alter table
+ALTER TABLE
     job
-add
-    constraint foreign key (locationId) references location(id);
+ADD CONSTRAINT FOREIGN KEY (locationId) REFERENCES location(id);
 
-alter table
+ALTER TABLE
     job_item
-add
-    constraint foreign key (jobId) references job(id),
-add
-    constraint foreign key (itemId) references item(id);
+ADD CONSTRAINT FOREIGN KEY (jobId) REFERENCES job(id),
+ADD CONSTRAINT FOREIGN KEY (itemId) REFERENCES item(id);
 
-alter table
+ALTER TABLE
     `user`
-add
-    constraint foreign key (supervisorId) references `user`(username);
+ADD CONSTRAINT FOREIGN KEY (supervisorId) REFERENCES `user`(username);
 
-alter table
+ALTER TABLE
     user_location
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (username) references `user`(username);
+ADD CONSTRAINT FOREIGN KEY (locationId) REFERENCES location(id),
+ADD CONSTRAINT FOREIGN KEY (username) REFERENCES `user`(username);
 
-alter table
+ALTER TABLE
     user_role
-add
-    constraint foreign key (username) references `user`(username),
-add
-    constraint foreign key (roleId) references `role`(id);
+ADD CONSTRAINT FOREIGN KEY (username) REFERENCES `user`(username),
+ADD CONSTRAINT FOREIGN KEY (roleId) REFERENCES `role`(id);
 
-alter table
+ALTER TABLE
     request
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (username) references `user`(username);
+ADD CONSTRAINT FOREIGN KEY (locationId) REFERENCES location(id),
+ADD CONSTRAINT FOREIGN KEY (username) REFERENCES `user`(username);
 
-alter table
+ALTER TABLE
     location_item
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (itemId) references item(id);
+ADD CONSTRAINT FOREIGN KEY (locationId) REFERENCES location(id),
+ADD CONSTRAINT FOREIGN KEY (itemId) REFERENCES item(id);
 
-alter table
+ALTER TABLE
     request_item
-add
-    constraint foreign key (itemId) references item(id),
-add
-    constraint foreign key (requestId) references request(id);
+ADD CONSTRAINT FOREIGN KEY (itemId) REFERENCES item(id),
+ADD CONSTRAINT FOREIGN KEY (requestId) REFERENCES request(id);
 
-alter table
+ALTER TABLE
     item_category
-add
-    constraint foreign key (itemId) references item(id),
-add
-    constraint foreign key (categoryId) references category(id);
+ADD CONSTRAINT FOREIGN KEY (itemId) REFERENCES item(id),
+ADD CONSTRAINT FOREIGN KEY (categoryId) REFERENCES category(id);
 
-alter table
+ALTER TABLE
     item_serial_number
-add
-    constraint foreign key (locationItemId) references location_item(id),
-add
-    constraint foreign key (serialNumberId) references serial_number(id);
+ADD CONSTRAINT FOREIGN KEY (locationItemId) REFERENCES location_item(id),
+ADD CONSTRAINT FOREIGN KEY (serialNumberId) REFERENCES serial_number(id);
