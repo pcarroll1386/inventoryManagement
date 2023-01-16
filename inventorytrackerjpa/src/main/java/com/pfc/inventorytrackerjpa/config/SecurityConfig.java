@@ -42,7 +42,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE)
                 .hasRole("ADMIN")
-                .antMatchers("/locations", "/locations/**").permitAll()
+                .antMatchers("/locations", "/locations/**", "/items", "/items/**", "/categories", "/categories/**").permitAll()
                 .antMatchers("/admin/**")
                 .hasAnyRole("ADMIN")
                 .antMatchers("/user/**")

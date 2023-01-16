@@ -21,24 +21,24 @@ public class LocationController {
     @Autowired
     LocationRepository locationRepo;
 
-    @GetMapping("/getAllLocations")
+    @GetMapping("/getAll")
     public List<Location> getAllLocations(){
         return locationRepo.findAll();
     }
 
-    @GetMapping("/getLocationById/{id}")
+    @GetMapping("/getById/{id}")
     public Location getLocationById(@PathVariable("id") UUID id){
         Location location = locationRepo.findById(id).orElse(null);
         return location;
     }
 
-    @PostMapping(value="/createLocation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Location createLocation(@RequestBody Location location){
         Location savedLocation = locationRepo.save(location);
         return savedLocation;
     }
 
-    @PutMapping(value="/editLocation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value="/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Location editLocation(@RequestBody Location location){
         Location currentLocation = locationRepo.findById(location.getId()).orElse(null);
         currentLocation.setName(location.getName());
