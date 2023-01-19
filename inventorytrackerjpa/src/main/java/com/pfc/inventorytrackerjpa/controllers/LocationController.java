@@ -3,6 +3,7 @@ package com.pfc.inventorytrackerjpa.controllers;
 
 import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
+import com.pfc.inventorytrackerjpa.service.InvalidLocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
@@ -39,12 +40,25 @@ public class LocationController {
     }
 
     @PutMapping(value="/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Location editLocation(@RequestBody Location location){
+    public Location editLocation(@RequestBody Location location) throws InvalidLocationException {
         Location currentLocation = locationRepo.findById(location.getId()).orElse(null);
+        if(currentLocation == null){
+            throw new InvalidLocationException("Please provide valid location");
+        }
         currentLocation.setName(location.getName());
         currentLocation.setDescription(location.getDescription());
         currentLocation.setTemplate(location.isTemplate());
         Location updatedLocation = locationRepo.save(currentLocation);
         return updatedLocation;
+    }
+
+    @PostMapping("/delete/{id}")
+    public boolean deleteLocationById(@PathVariable("id") UUID id ){
+        Location location = locationRepo.findById(id).orElse(null);
+        if(location != null){
+            locationRepo.delete(location);
+            return true;
+        }
+        return false;
     }
 }

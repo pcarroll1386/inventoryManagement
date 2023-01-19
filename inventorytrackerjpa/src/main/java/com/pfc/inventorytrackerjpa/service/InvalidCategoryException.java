@@ -10,3 +10,4 @@ public class InvalidCategoryException extends Exception{
         super(message, cause);
    }
 }
+

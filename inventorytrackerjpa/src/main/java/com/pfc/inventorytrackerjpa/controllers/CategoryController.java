@@ -49,7 +49,6 @@ public class CategoryController {
 
     @PostMapping("/delete/{id}")
     public boolean deleteCategoryById(@PathVariable("id") UUID id){
-        System.out.println(id);
         Category category = categoryRepo.findById(id).orElse(null);
         if(category != null){
             categoryRepo.delete(category);

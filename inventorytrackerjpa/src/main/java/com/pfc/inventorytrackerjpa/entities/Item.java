@@ -21,7 +21,7 @@ public class Item {
     @Column(name = "model_number")
     private String modelNumber;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "item_category",
             joinColumns = @JoinColumn(name = "item_id"),
