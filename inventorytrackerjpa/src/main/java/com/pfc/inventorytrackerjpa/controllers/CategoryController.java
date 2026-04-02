@@ -3,7 +3,8 @@ package com.pfc.inventorytrackerjpa.controllers;
 import com.pfc.inventorytrackerjpa.entities.Category;
 import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.CategoryRepository;
-import com.pfc.inventorytrackerjpa.service.InvalidCategoryException;
+import com.pfc.inventorytrackerjpa.services.InvalidCategoryException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +24,7 @@ public class CategoryController {
     public List<Category> getAll(){return categoryRepo.findAll(); }
 
     @GetMapping("/getById/{id}")
-    public Category getCategoryById(@PathVariable("id") UUID id){
+    public Category getCategoryById(@PathVariable("id") Long id){
         Category category = categoryRepo.findById(id).orElse(null);
         return category;
     }
@@ -48,7 +49,7 @@ public class CategoryController {
     }
 
     @PostMapping("/delete/{id}")
-    public boolean deleteCategoryById(@PathVariable("id") UUID id){
+    public boolean deleteCategoryById(@PathVariable("id") Long id){
         Category category = categoryRepo.findById(id).orElse(null);
         if(category != null){
             categoryRepo.delete(category);

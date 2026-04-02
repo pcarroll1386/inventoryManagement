@@ -3,7 +3,8 @@ package com.pfc.inventorytrackerjpa.controllers;
 
 import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
-import com.pfc.inventorytrackerjpa.service.InvalidLocationException;
+import com.pfc.inventorytrackerjpa.services.InvalidLocationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
@@ -28,7 +29,7 @@ public class LocationController {
     }
 
     @GetMapping("/getById/{id}")
-    public Location getLocationById(@PathVariable("id") UUID id){
+    public Location getLocationById(@PathVariable("id") Long id){
         Location location = locationRepo.findById(id).orElse(null);
         return location;
     }
@@ -53,7 +54,7 @@ public class LocationController {
     }
 
     @PostMapping("/delete/{id}")
-    public boolean deleteLocationById(@PathVariable("id") UUID id ){
+    public boolean deleteLocationById(@PathVariable("id") Long id ){
         Location location = locationRepo.findById(id).orElse(null);
         if(location != null){
             locationRepo.delete(location);

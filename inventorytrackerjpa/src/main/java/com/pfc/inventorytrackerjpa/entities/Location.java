@@ -9,9 +9,13 @@ import java.util.UUID;
 @Entity
 public class Location {
 
-    @GeneratedValue
+//    @GeneratedValue
+//    @Id
+//    private UUID id;
+
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     @Column
     @NotNull
@@ -23,11 +27,11 @@ public class Location {
     @Column
     private boolean template;
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -60,11 +64,11 @@ public class Location {
         if (this == o) return true;
         if (!(o instanceof Location)) return false;
         Location location = (Location) o;
-        return isTemplate() == location.isTemplate() && getId().equals(location.getId()) && getName().equals(location.getName()) && Objects.equals(getDescription(), location.getDescription());
+        return id == location.id && template == location.template && Objects.equals(name, location.name) && Objects.equals(description, location.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), isTemplate());
+        return Objects.hash(id, name, description, template);
     }
 }

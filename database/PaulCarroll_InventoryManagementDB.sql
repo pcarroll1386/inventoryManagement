@@ -2,20 +2,21 @@ drop database if exists inventorymanagementdbtest;
 
 create database inventorymanagementdbtest;
 
-use inventorymanagementdbtest;
+-- Connect to the new database before running the rest
+-- \c inventorymanagementdbtest;
 
-create table user(
+create table "user"(
     username varchar(50) primary key not null,
-    `password` varchar(150) not null,
-    enabled boolean not null default 1,
+    "password" varchar(150) not null,
+    enabled boolean not null default true,
     supervisorId varchar(50),
     employeeNumber int not null,
-    `name` varchar(50) not null
+    "name" varchar(50) not null
 );
 
-create table `role`(
-    id int primary key auto_increment,
-    `role` varchar(50)
+create table "role"(
+    id serial primary key,
+    "role" varchar(50)
 );
 
 create table user_role(
@@ -25,10 +26,10 @@ create table user_role(
 );
 
 create table location(
-    id int primary key auto_increment,
-    `name` varchar(50) not null,
-    `description` varchar(50),
-    template boolean not null default 0
+    id serial primary key,
+    "name" varchar(50) not null,
+    "description" varchar(50),
+    template boolean not null default false
 );
 
 create table user_location(
@@ -38,139 +39,96 @@ create table user_location(
 );
 
 create table job(
-    id int primary key auto_increment,
-    `name` varchar(25) not null,
-    template boolean not null default 0,
+    id serial primary key,
+    "name" varchar(25) not null,
+    template boolean not null default false,
     locationId int not null
 );
 
 create table request(
-    id int primary key auto_increment,
+    id serial primary key,
     locationId int not null,
     username varchar(50) not null,
-    submitDate datetime,
-    fillDate datetime,
+    submitDate timestamp,
+    fillDate timestamp,
     notes text,
-    `status` int not null default 0,
-    `type` int not null default 0,
+    "status" int not null default 0,
+    "type" int not null default 0,
     priority int not null default 0,
     workOrder varchar(50)
 );
 
-create table item(
+create table item_type(
     id varchar(50) primary key,
-    `name` varchar(50) not null,
+    "name" varchar(50) not null,
     nickname varchar(50),
-    `description` varchar(200) not null,
-    price decimal(8, 2)
+    "description" varchar(200) not null
 );
 
 create table job_item(
     jobId int not null,
-    itemId varchar(50) not null,
-    primary key (jobId, itemId)
+    itemTypeId varchar(50) not null,
+    primary key (jobId, itemTypeId)
 );
 
-create table serial_number (
-    id varchar(255) primary key auto_increment,
-);
-
-create table location_item(
-    id int primary key auto_increment,
+create table item(
+    id serial primary key,
     locationId int not null,
-    itemId varchar(50) not null,
-    inInventory int,
+    itemTypeId varchar(50) not null,
+    serial_number varchar(255),
+    price decimal(8, 2),
     max int,
-    min int,
-    primary key(locationId, itemId)
-);
-
-create table item_serial_number (
-    locationItemId int not null,
-    serialNumberId varchar(255) not null,
-    primary key(locationItemId, serialNumberId)
+    min int
 );
 
 create table request_item(
     requestId int not null,
-    itemId varchar(50) not null,
+    itemTypeId varchar(50) not null,
     quantity int,
-    primary key(requestId, itemId)
+    primary key(requestId, itemTypeId)
 );
 
 create table category(
-    id int primary key auto_increment,
-    `name` varchar(50) not null
+    id serial primary key,
+    "name" varchar(50) not null
 );
 
 create table item_category(
-    itemId varchar(50) not null,
+    itemTypeId varchar(50) not null,
     categoryId int not null,
-    primary key(itemId, categoryId)
+    primary key(itemTypeId, categoryId)
 );
 
-alter table
-    job
-add
-    constraint foreign key (locationId) references location(id);
+alter table job
+    add constraint fk_job_location foreign key (locationId) references location(id);
 
-alter table
-    job_item
-add
-    constraint foreign key (jobId) references job(id),
-add
-    constraint foreign key (itemId) references item(id);
+alter table job_item
+    add constraint fk_jobitem_job foreign key (jobId) references job(id),
+    add constraint fk_jobitem_itemtype foreign key (itemTypeId) references item_type(id);
 
-alter table
-    `user`
-add
-    constraint foreign key (supervisorId) references `user`(username);
+alter table "user"
+    add constraint fk_user_supervisor foreign key (supervisorId) references "user"(username);
 
-alter table
-    user_location
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (username) references `user`(username);
+alter table user_location
+    add constraint fk_userlocation_location foreign key (locationId) references location(id),
+    add constraint fk_userlocation_user foreign key (username) references "user"(username);
 
-alter table
-    user_role
-add
-    constraint foreign key (username) references `user`(username),
-add
-    constraint foreign key (roleId) references `role`(id);
+alter table user_role
+    add constraint fk_userrole_user foreign key (username) references "user"(username),
+    add constraint fk_userrole_role foreign key (roleId) references "role"(id);
 
-alter table
-    request
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (username) references `user`(username);
+alter table request
+    add constraint fk_request_location foreign key (locationId) references location(id),
+    add constraint fk_request_user foreign key (username) references "user"(username);
 
-alter table
-    location_item
-add
-    constraint foreign key (locationId) references location(id),
-add
-    constraint foreign key (itemId) references item(id);
+alter table item
+    add constraint fk_item_location foreign key (locationId) references location(id),
+    add constraint fk_item_itemtype foreign key (itemTypeId) references item_type(id);
 
-alter table
-    request_item
-add
-    constraint foreign key (itemId) references item(id),
-add
-    constraint foreign key (requestId) references request(id);
+alter table request_item
+    add constraint fk_requestitem_itemtype foreign key (itemTypeId) references item_type(id),
+    add constraint fk_requestitem_request foreign key (requestId) references request(id);
 
-alter table
-    item_category
-add
-    constraint foreign key (itemId) references item(id),
-add
-    constraint foreign key (categoryId) references category(id);
-
-alter table
-    item_serial_number
-add
-    constraint foreign key (locationItemId) references location_item(id),
-add
-    constraint foreign key (serialNumberId) references serial_number(id);
+alter table item_category
+    add constraint fk_itemcategory_itemtype foreign key (itemTypeId) references item_type(id),
+    add constraint fk_itemcategory_category foreign key (categoryId) references category(id); 

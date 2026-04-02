@@ -1,63 +1,91 @@
 package com.pfc.inventorytrackerjpa.entities;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 @Entity
+@Table(name = "item")
 public class Item {
 
-    @GeneratedValue
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "locationId", nullable = false)
+    private Location location;
+
+    @ManyToOne
+    @JoinColumn(name = "itemTypeId", nullable = false)
+    private ItemType itemType;
+
+    @Column(name = "serial_number")
+    private String serialNumber;
 
     @Column
-    @NotNull
-    private String name;
+    private BigDecimal price;
 
-    @Column(name = "model_number")
-    private String modelNumber;
+    @Column
+    private int max;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "item_category",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+    @Column
+    private int min;
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
-    public String getModelNumber() {
-        return modelNumber;
+    public ItemType getItemType() {
+        return itemType;
     }
 
-    public void setModelNumber(String modelNumber) {
-        this.modelNumber = modelNumber;
+    public void setItemType(ItemType itemType) {
+        this.itemType = itemType;
     }
 
-    public Set<Category> getCategories() {
-        return categories;
+    public String getSerialNumber() {
+        return serialNumber;
     }
 
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
     }
 
     @Override
@@ -65,11 +93,17 @@ public class Item {
         if (this == o) return true;
         if (!(o instanceof Item)) return false;
         Item item = (Item) o;
-        return getId().equals(item.getId()) && getName().equals(item.getName()) && Objects.equals(getModelNumber(), item.getModelNumber()) && Objects.equals(getCategories(), item.getCategories());
+        return id == item.id
+                && max == item.max
+                && min == item.min
+                && Objects.equals(location, item.location)
+                && Objects.equals(itemType, item.itemType)
+                && Objects.equals(serialNumber, item.serialNumber)
+                && Objects.equals(price, item.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getModelNumber(), getCategories());
+        return Objects.hash(id, location, itemType, serialNumber, price, max, min);
     }
 }

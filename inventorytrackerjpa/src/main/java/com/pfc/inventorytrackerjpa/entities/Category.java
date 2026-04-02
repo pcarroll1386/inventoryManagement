@@ -4,28 +4,28 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 public class Category {
 
-    @GeneratedValue
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
 
     @Column
     @NotNull
     private String name;
 
-//    @ManyToMany(mappedBy = "categories")
-//    private Set<Item> items;
+    @ManyToMany(mappedBy = "categories")
+    private Set<ItemType> itemTypes;
 
 
-    public UUID getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -42,11 +42,11 @@ public class Category {
         if (this == o) return true;
         if (!(o instanceof Category)) return false;
         Category category = (Category) o;
-        return getId().equals(category.getId()) && getName().equals(category.getName());
+        return id == category.id && name.equals(category.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName());
+        return Objects.hash(id, name);
     }
 }
