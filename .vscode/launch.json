@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-InventorytrackerjpaApplication<inventorytrackerjpa>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.pfc.inventorytrackerjpa.InventorytrackerjpaApplication",
+            "projectName": "inventorytrackerjpa",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

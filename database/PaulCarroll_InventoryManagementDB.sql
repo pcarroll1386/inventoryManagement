@@ -1,134 +1,133 @@
-drop database if exists inventorymanagementdbtest;
+-- Run this section separately in DBeaver (connected to postgres DB), then reconnect to inventorymanagementdbtest.
+DROP DATABASE IF EXISTS inventorymanagementdbtest;
+CREATE DATABASE inventorymanagementdbtest;
 
-create database inventorymanagementdbtest;
+-- After reconnecting to inventorymanagementdbtest, run everything below.
 
--- Connect to the new database before running the rest
--- \c inventorymanagementdbtest;
-
-create table "user"(
-    username varchar(50) primary key not null,
-    "password" varchar(150) not null,
-    enabled boolean not null default true,
-    supervisorId varchar(50),
-    employeeNumber int not null,
-    "name" varchar(50) not null
+CREATE TABLE "user"(
+    username VARCHAR(255) PRIMARY KEY NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    supervisor_id VARCHAR(255),
+    employee_number INT NOT NULL,
+    "name" VARCHAR(255) NOT NULL
 );
 
-create table "role"(
-    id serial primary key,
-    "role" varchar(50)
+CREATE TABLE "role"(
+    id SERIAL PRIMARY KEY,
+    "role" VARCHAR(255)
 );
 
-create table user_role(
-    username varchar(50) not null,
-    roleId int not null,
-    primary key(username, roleId)
+CREATE TABLE user_role(
+    username VARCHAR(255) NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY(username, role_id)
 );
 
-create table location(
-    id serial primary key,
-    "name" varchar(50) not null,
-    "description" varchar(50),
-    template boolean not null default false
+CREATE TABLE location(
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL,
+    "description" VARCHAR(255),
+    template BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-create table user_location(
-    locationId int not null,
-    username varchar(50) not null,
-    primary key(locationId, username)
+CREATE TABLE user_location(
+    location_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    PRIMARY KEY(location_id, username)
 );
 
-create table job(
-    id serial primary key,
-    "name" varchar(25) not null,
-    template boolean not null default false,
-    locationId int not null
+CREATE TABLE job(
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL,
+    template BOOLEAN NOT NULL DEFAULT FALSE,
+    location_id INT NOT NULL
 );
 
-create table request(
-    id serial primary key,
-    locationId int not null,
-    username varchar(50) not null,
-    submitDate timestamp,
-    fillDate timestamp,
-    notes text,
-    "status" int not null default 0,
-    "type" int not null default 0,
-    priority int not null default 0,
-    workOrder varchar(50)
+CREATE TABLE request(
+    id SERIAL PRIMARY KEY,
+    location_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    submit_date TIMESTAMP,
+    fill_date TIMESTAMP,
+    notes TEXT,
+    "status" INT NOT NULL DEFAULT 0,
+    "type" INT NOT NULL DEFAULT 0,
+    priority INT NOT NULL DEFAULT 0,
+    work_order VARCHAR(255)
 );
 
-create table item_type(
-    id varchar(50) primary key,
-    "name" varchar(50) not null,
-    nickname varchar(50),
-    "description" varchar(200) not null
+CREATE TABLE item_type(
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL,
+    nickname VARCHAR(255),
+    "description" VARCHAR(255) NOT NULL
 );
 
-create table job_item(
-    jobId int not null,
-    itemTypeId varchar(50) not null,
-    primary key (jobId, itemTypeId)
+CREATE TABLE job_item(
+    job_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    PRIMARY KEY (job_id, item_type_id)
 );
 
-create table item(
-    id serial primary key,
-    locationId int not null,
-    itemTypeId varchar(50) not null,
-    serial_number varchar(255),
-    price decimal(8, 2),
-    max int,
-    min int
+CREATE TABLE item(
+    id SERIAL PRIMARY KEY,
+    location_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    serial_number VARCHAR(255),
+    price DECIMAL(8, 2),
+    max INT,
+    min INT
 );
 
-create table request_item(
-    requestId int not null,
-    itemTypeId varchar(50) not null,
-    quantity int,
-    primary key(requestId, itemTypeId)
+CREATE TABLE request_item(
+    request_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    quantity INT,
+    PRIMARY KEY(request_id, item_type_id)
 );
 
-create table category(
-    id serial primary key,
-    "name" varchar(50) not null
+CREATE TABLE category(
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL
 );
 
-create table item_category(
-    itemTypeId varchar(50) not null,
-    categoryId int not null,
-    primary key(itemTypeId, categoryId)
+CREATE TABLE item_category(
+    item_type_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY(item_type_id, category_id)
 );
 
-alter table job
-    add constraint fk_job_location foreign key (locationId) references location(id);
+ALTER TABLE job
+    ADD CONSTRAINT fk_job_location FOREIGN KEY (location_id) REFERENCES location(id);
 
-alter table job_item
-    add constraint fk_jobitem_job foreign key (jobId) references job(id),
-    add constraint fk_jobitem_itemtype foreign key (itemTypeId) references item_type(id);
+ALTER TABLE job_item
+    ADD CONSTRAINT fk_jobitem_job FOREIGN KEY (job_id) REFERENCES job(id),
+    ADD CONSTRAINT fk_jobitem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
 
-alter table "user"
-    add constraint fk_user_supervisor foreign key (supervisorId) references "user"(username);
+ALTER TABLE "user"
+    ADD CONSTRAINT fk_user_supervisor FOREIGN KEY (supervisor_id) REFERENCES "user"(username);
 
-alter table user_location
-    add constraint fk_userlocation_location foreign key (locationId) references location(id),
-    add constraint fk_userlocation_user foreign key (username) references "user"(username);
+ALTER TABLE user_location
+    ADD CONSTRAINT fk_userlocation_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_userlocation_user FOREIGN KEY (username) REFERENCES "user"(username);
 
-alter table user_role
-    add constraint fk_userrole_user foreign key (username) references "user"(username),
-    add constraint fk_userrole_role foreign key (roleId) references "role"(id);
+ALTER TABLE user_role
+    ADD CONSTRAINT fk_userrole_user FOREIGN KEY (username) REFERENCES "user"(username),
+    ADD CONSTRAINT fk_userrole_role FOREIGN KEY (role_id) REFERENCES "role"(id);
 
-alter table request
-    add constraint fk_request_location foreign key (locationId) references location(id),
-    add constraint fk_request_user foreign key (username) references "user"(username);
+ALTER TABLE request
+    ADD CONSTRAINT fk_request_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_request_user FOREIGN KEY (username) REFERENCES "user"(username);
 
-alter table item
-    add constraint fk_item_location foreign key (locationId) references location(id),
-    add constraint fk_item_itemtype foreign key (itemTypeId) references item_type(id);
+ALTER TABLE item
+    ADD CONSTRAINT fk_item_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_item_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
 
-alter table request_item
-    add constraint fk_requestitem_itemtype foreign key (itemTypeId) references item_type(id),
-    add constraint fk_requestitem_request foreign key (requestId) references request(id);
+ALTER TABLE request_item
+    ADD CONSTRAINT fk_requestitem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id),
+    ADD CONSTRAINT fk_requestitem_request FOREIGN KEY (request_id) REFERENCES request(id);
 
-alter table item_category
-    add constraint fk_itemcategory_itemtype foreign key (itemTypeId) references item_type(id),
-    add constraint fk_itemcategory_category foreign key (categoryId) references category(id); 
+ALTER TABLE item_category
+    ADD CONSTRAINT fk_itemcategory_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id),
+    ADD CONSTRAINT fk_itemcategory_category FOREIGN KEY (category_id) REFERENCES category(id);

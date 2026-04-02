@@ -32,19 +32,30 @@ public class ItemTypeController {
     }
 
     @GetMapping("/getById/{id}")
-    public ItemType getItemTypeById(@PathVariable("id") String id) {
+    public ItemType getItemTypeById(@PathVariable("id") Long id) {
         return itemTypeRepo.findById(id).orElse(null);
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ItemType createItemType(@RequestBody ItemType itemType) throws InvalidCategoryException {
-        for (Category c : itemType.getCategories()) {
-            Category isValid = categoryRepo.findById(c.getId()).orElse(null);
-            if (isValid == null) {
-                throw new InvalidCategoryException(c.getName() + " is not a valid category.");
+        Set<Category> validCategories = new HashSet<>();
+        if (itemType.getCategories() != null) {
+            for (Category c : itemType.getCategories()) {
+                if (c == null) {
+                    throw new InvalidCategoryException("A null category entry is not valid.");
+                }
+                if (c.getId() == null || c.getId() <= 0) {
+                    throw new InvalidCategoryException("A valid category id is required for each category.");
+                }
+                Category isValid = categoryRepo.findById(c.getId()).orElse(null);
+                if (isValid == null) {
+                    throw new InvalidCategoryException("Category id " + c.getId() + " is not a valid category.");
+                }
+                validCategories.add(isValid);
             }
         }
+        itemType.setCategories(validCategories);
         return itemTypeRepo.save(itemType);
     }
 
@@ -58,19 +69,27 @@ public class ItemTypeController {
         current.setNickname(itemType.getNickname());
         current.setDescription(itemType.getDescription());
         Set<Category> categories = new HashSet<>();
-        for (Category c : itemType.getCategories()) {
-            Category isValid = categoryRepo.findById(c.getId()).orElse(null);
-            if (isValid == null) {
-                throw new InvalidCategoryException(c.getName() + " is not a valid category.");
+        if (itemType.getCategories() != null) {
+            for (Category c : itemType.getCategories()) {
+                if (c == null) {
+                    throw new InvalidCategoryException("A null category entry is not valid.");
+                }
+                if (c.getId() == null || c.getId() <= 0) {
+                    throw new InvalidCategoryException("A valid category id is required for each category.");
+                }
+                Category isValid = categoryRepo.findById(c.getId()).orElse(null);
+                if (isValid == null) {
+                    throw new InvalidCategoryException("Category id " + c.getId() + " is not a valid category.");
+                }
+                categories.add(isValid);
             }
-            categories.add(c);
         }
         current.setCategories(categories);
         return itemTypeRepo.save(current);
     }
 
     @PostMapping("/delete/{id}")
-    public boolean deleteItemTypeById(@PathVariable("id") String id) {
+    public boolean deleteItemTypeById(@PathVariable("id") Long id) {
         ItemType itemType = itemTypeRepo.findById(id).orElse(null);
         if (itemType != null) {
             itemTypeRepo.delete(itemType);
