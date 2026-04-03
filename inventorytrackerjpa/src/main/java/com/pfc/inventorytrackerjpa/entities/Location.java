@@ -11,10 +11,6 @@ import java.util.Set;
 @Entity
 public class Location {
 
-//    @GeneratedValue
-//    @Id
-//    private UUID id;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -32,6 +28,10 @@ public class Location {
     @JsonIgnore
     @ManyToMany(mappedBy = "locations", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
+    private Set<UserLocationRole> userLocationRoles = new HashSet<>();
 
     public long getId() {
         return id;
@@ -71,6 +71,14 @@ public class Location {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Set<UserLocationRole> getUserLocationRoles() {
+        return userLocationRoles;
+    }
+
+    public void setUserLocationRoles(Set<UserLocationRole> userLocationRoles) {
+        this.userLocationRoles = userLocationRoles;
     }
 
     @Override

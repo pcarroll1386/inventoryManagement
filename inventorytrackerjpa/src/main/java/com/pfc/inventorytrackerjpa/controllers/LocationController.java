@@ -5,23 +5,20 @@ import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
 import com.pfc.inventorytrackerjpa.services.InvalidLocationException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.websocket.server.PathParam;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/locations")
 public class LocationController {
 
-    @Autowired
-    LocationRepository locationRepo;
+    private final LocationRepository locationRepo;
+
+    public LocationController(LocationRepository locationRepo) {
+        this.locationRepo = locationRepo;
+    }
 
     @GetMapping("/getAll")
     public List<Location> getAllLocations(){

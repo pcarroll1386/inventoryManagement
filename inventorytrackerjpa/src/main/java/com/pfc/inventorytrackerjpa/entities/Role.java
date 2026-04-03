@@ -15,12 +15,20 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", unique = true, nullable = false)
     private String roleName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoleScope scope;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private Set<UserLocationRole> userLocationRoles = new HashSet<>();
 
     public long getId() {
         return id;
@@ -38,6 +46,14 @@ public class Role {
         this.roleName = roleName;
     }
 
+    public RoleScope getScope() {
+        return scope;
+    }
+
+    public void setScope(RoleScope scope) {
+        this.scope = scope;
+    }
+
     public Set<User> getUsers() {
         return users;
     }
@@ -46,17 +62,25 @@ public class Role {
         this.users = users;
     }
 
+    public Set<UserLocationRole> getUserLocationRoles() {
+        return userLocationRoles;
+    }
+
+    public void setUserLocationRoles(Set<UserLocationRole> userLocationRoles) {
+        this.userLocationRoles = userLocationRoles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Role)) return false;
         Role r = (Role) o;
-        return id == r.id && Objects.equals(roleName, r.roleName);
+        return id == r.id && Objects.equals(roleName, r.roleName) && scope == r.scope;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roleName);
+        return Objects.hash(id, roleName, scope);
     }
 }
 

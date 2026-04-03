@@ -9,7 +9,6 @@ import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
 import com.pfc.inventorytrackerjpa.services.InvalidDataException;
 import com.pfc.inventorytrackerjpa.services.InvalidItemException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +19,17 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
 
-    @Autowired
-    ItemRepository itemRepo;
+    private final ItemRepository itemRepo;
 
-    @Autowired
-    ItemTypeRepository itemTypeRepo;
+    private final ItemTypeRepository itemTypeRepo;
 
-    @Autowired
-    LocationRepository locationRepo;
+    private final LocationRepository locationRepo;
+
+    public ItemController(ItemRepository itemRepo, ItemTypeRepository itemTypeRepo, LocationRepository locationRepo) {
+        this.itemRepo = itemRepo;
+        this.itemTypeRepo = itemTypeRepo;
+        this.locationRepo = locationRepo;
+    }
 
     @GetMapping("/getAll")
     public List<Item> getAll() {

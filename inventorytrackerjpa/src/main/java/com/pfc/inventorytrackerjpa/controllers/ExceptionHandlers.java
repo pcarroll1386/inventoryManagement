@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import com.pfc.inventorytrackerjpa.services.InvalidCategoryException;
+import com.pfc.inventorytrackerjpa.services.InvalidDataException;
 import com.pfc.inventorytrackerjpa.services.InvalidItemException;
 import com.pfc.inventorytrackerjpa.services.InvalidLocationException;
+import com.pfc.inventorytrackerjpa.services.InvalidRoleException;
+import com.pfc.inventorytrackerjpa.services.InvalidUserException;
 
 @ControllerAdvice
 @RestController
@@ -34,6 +37,27 @@ public class ExceptionHandlers {
         String message = ex.getMessage();
         Error err = new Error(message);
         return new ResponseEntity<>(err, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<Error> handleInvalidRoleException(InvalidRoleException ex, WebRequest request){
+        String message = ex.getMessage();
+        Error err = new Error(message);
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidUserException.class)
+    public ResponseEntity<Error> handleInvalidUserException(InvalidUserException ex, WebRequest request){
+        String message = ex.getMessage();
+        Error err = new Error(message);
+        return new ResponseEntity<>(err, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<Error> handleInvalidDataException(InvalidDataException ex, WebRequest request){
+        String message = ex.getMessage();
+        Error err = new Error(message);
+        return new ResponseEntity<>(err, HttpStatus.BAD_REQUEST);
     }
 
 }

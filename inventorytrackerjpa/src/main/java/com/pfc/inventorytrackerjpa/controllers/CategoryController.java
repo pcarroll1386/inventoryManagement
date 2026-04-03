@@ -1,24 +1,24 @@
 package com.pfc.inventorytrackerjpa.controllers;
 
 import com.pfc.inventorytrackerjpa.entities.Category;
-import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.CategoryRepository;
 import com.pfc.inventorytrackerjpa.services.InvalidCategoryException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
 
-    @Autowired
-    CategoryRepository categoryRepo;
+    private final CategoryRepository categoryRepo;
+
+    public CategoryController(CategoryRepository categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
 
     @GetMapping("/getAll")
     public List<Category> getAll(){return categoryRepo.findAll(); }

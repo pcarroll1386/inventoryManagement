@@ -14,9 +14,15 @@ CREATE TABLE "user"(
     "name" VARCHAR(255) NOT NULL
 );
 
+CREATE TYPE role_scope AS ENUM (
+    'APP',
+    'LOCATION'
+);
+
 CREATE TABLE "role"(
     id SERIAL PRIMARY KEY,
-    "role" VARCHAR(255)
+    "role" VARCHAR(255) UNIQUE NOT NULL,
+    scope role_scope NOT NULL
 );
 
 CREATE TABLE user_role(
@@ -36,6 +42,14 @@ CREATE TABLE user_location(
     location_id INT NOT NULL,
     user_id int NOT NULL,
     PRIMARY KEY(location_id, user_id)
+);
+
+CREATE TABLE user_location_role(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    location_id INT NOT NULL,
+    role_id INT NOT NULL,
+    CONSTRAINT uq_user_location_role UNIQUE (user_id, location_id, role_id)
 );
 
 CREATE TABLE job(
@@ -132,6 +146,11 @@ ALTER TABLE "user"
 ALTER TABLE user_location
     ADD CONSTRAINT fk_userlocation_location FOREIGN KEY (location_id) REFERENCES location(id),
     ADD CONSTRAINT fk_userlocation_user FOREIGN KEY (user_id) REFERENCES "user"(id);
+
+ALTER TABLE user_location_role
+    ADD CONSTRAINT fk_userlocationrole_user FOREIGN KEY (user_id) REFERENCES "user"(id),
+    ADD CONSTRAINT fk_userlocationrole_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_userlocationrole_role FOREIGN KEY (role_id) REFERENCES "role"(id);
 
 ALTER TABLE user_role
     ADD CONSTRAINT fk_userrole_user FOREIGN KEY (user_id) REFERENCES "user"(id),

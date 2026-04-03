@@ -1,5 +1,7 @@
 package com.pfc.inventorytrackerjpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -46,6 +48,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "location_id")
     )
     private Set<Location> locations = new HashSet<>();
+
+        @JsonIgnore
+        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+        private Set<UserLocationRole> locationRoles = new HashSet<>();
 
     public long getId() {
         return id;
@@ -133,6 +139,14 @@ public class User {
 
     public void setLocations(Set<Location> locations) {
         this.locations = locations;
+    }
+
+    public Set<UserLocationRole> getLocationRoles() {
+        return locationRoles;
+    }
+
+    public void setLocationRoles(Set<UserLocationRole> locationRoles) {
+        this.locationRoles = locationRoles;
     }
 
     public void addLocation(Location location) {

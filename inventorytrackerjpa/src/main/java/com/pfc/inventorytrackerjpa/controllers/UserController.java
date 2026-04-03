@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import com.pfc.inventorytrackerjpa.entities.Role;
+import com.pfc.inventorytrackerjpa.entities.RoleScope;
 import com.pfc.inventorytrackerjpa.entities.User;
 import com.pfc.inventorytrackerjpa.entities.Location;
 import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
@@ -24,14 +24,17 @@ import com.pfc.inventorytrackerjpa.services.InvalidUserException;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    UserRepository userRepo;
+    private final UserRepository userRepo;
 
-    @Autowired
-    RoleRepository roleRepo;
+    private final RoleRepository roleRepo;
 
-    @Autowired
-    LocationRepository locationRepo;
+    private final LocationRepository locationRepo;
+
+    public UserController(UserRepository userRepo, RoleRepository roleRepo, LocationRepository locationRepo) {
+        this.userRepo = userRepo;
+        this.roleRepo = roleRepo;
+        this.locationRepo = locationRepo;
+    }
 
     @GetMapping("/getAll")
     public List<User> getAll() {
@@ -45,22 +48,23 @@ public class UserController {
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) throws InvalidUserException, InvalidRoleException {
-        user.setRoles(resolveRoles(user));
+    public User createUser(@RequestBody User user) throws InvalidRoleException {
+        user.setRoles(resolveAppRoles(user));
         user.setLocations(resolveLocations(user));
         return userRepo.save(user);
 
     }
 
     @PutMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public User editUser(@RequestBody User user) throws InvalidDataException {
+    public User editUser(@RequestBody User user) throws InvalidDataException, InvalidRoleException {
         User current = userRepo.findById(user.getId()).orElse(null);
         if (current == null) {
             throw new InvalidDataException("Please provide a valid user.");
         }
-        current.setRoles(resolveRoles(user));
+        current.setRoles(resolveAppRoles(user));
         current.setLocations(resolveLocations(user));
         current.setEmployeeIdentification(user.getEmployeeIdentification());
+        current.setUsername(user.getUsername());
         current.setEnabled(user.isEnabled());
         current.setName(user.getName());
         current.setPassword(user.getPassword());
@@ -90,7 +94,7 @@ public class UserController {
         return user.isEnabled();
     }
 
-    private Set<Role> resolveRoles(User user) {
+    private Set<Role> resolveAppRoles(User user) throws InvalidRoleException {
         Set<Role> roles = new HashSet<>();
         if (user.getRoles() == null) {
             return roles;
@@ -99,7 +103,12 @@ public class UserController {
             if (role == null) {
                 continue;
             }
-            roleRepo.findById(role.getId()).ifPresent(roles::add);
+            Role resolvedRole = roleRepo.findById(role.getId())
+                    .orElseThrow(() -> new InvalidRoleException("Invalid role id."));
+            if (resolvedRole.getScope() != RoleScope.APP) {
+                throw new InvalidRoleException("Role '" + resolvedRole.getRoleName() + "' is not an app role.");
+            }
+            roles.add(resolvedRole);
         }
         return roles;
     }

@@ -7,7 +7,6 @@ import com.pfc.inventorytrackerjpa.repositories.ItemTypeRepository;
 import com.pfc.inventorytrackerjpa.services.InvalidCategoryException;
 import com.pfc.inventorytrackerjpa.services.InvalidItemException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +19,14 @@ import java.util.Set;
 @RequestMapping("/itemTypes")
 public class ItemTypeController {
 
-    @Autowired
-    ItemTypeRepository itemTypeRepo;
+    private final ItemTypeRepository itemTypeRepo;
 
-    @Autowired
-    CategoryRepository categoryRepo;
+    private final CategoryRepository categoryRepo;
+
+    public ItemTypeController(ItemTypeRepository itemTypeRepo, CategoryRepository categoryRepo) {
+        this.itemTypeRepo = itemTypeRepo;
+        this.categoryRepo = categoryRepo;
+    }
 
     @GetMapping("/getAll")
     public List<ItemType> getAllItemTypes() {
