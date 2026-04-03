@@ -27,9 +27,6 @@ public class User {
     @Column(name = "employee_identification", nullable = false)
     private String employeeIdentification;
 
-    @Column(name = "supervisor_id")
-    private Long supervisorId;
-
     @Column(nullable = false)
     private boolean enabled = true;
 
@@ -91,14 +88,6 @@ public class User {
 
     public void setEmployeeIdentification(String employeeIdentification) {
         this.employeeIdentification = employeeIdentification;
-    }
-
-    public Long getSupervisorId() {
-        return supervisorId;
-    }
-
-    public void setSupervisorId(Long supervisorId) {
-        this.supervisorId = supervisorId;
     }
 
     public boolean isEnabled() {
@@ -174,13 +163,12 @@ public class User {
                 && enabled == user.enabled
                 && Objects.equals(username, user.username)
                 && Objects.equals(name, user.name)
-                && Objects.equals(employeeIdentification, user.employeeIdentification)
-                && Objects.equals(supervisorId, user.supervisorId);
+                && Objects.equals(employeeIdentification, user.employeeIdentification);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, name, employeeIdentification, supervisorId, enabled);
+        return Objects.hash(id, username, name, employeeIdentification, enabled);
     }
 }
 

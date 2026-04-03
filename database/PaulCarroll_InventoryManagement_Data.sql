@@ -5,7 +5,7 @@ insert into role(`role`)
     ('ROLE_ADMIN'),
     ('ROLE_WAREHOUSE'),
     ('ROLE_USER'),
-    ('ROLE_SUPERVISOR');
+    ('ROLE_MANAGER');
     
 insert into `user`(username, `password`, `name`, employeeNumber)
 	values

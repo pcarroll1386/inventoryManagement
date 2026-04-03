@@ -9,7 +9,6 @@ CREATE TABLE "user"(
     username VARCHAR(255) UNIQUE NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    supervisor_id VARCHAR(255),
     employee_identification varchar(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL
 );
@@ -139,9 +138,6 @@ ALTER TABLE job
 ALTER TABLE job_item
     ADD CONSTRAINT fk_jobitem_job FOREIGN KEY (job_id) REFERENCES job(id),
     ADD CONSTRAINT fk_jobitem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
-
-ALTER TABLE "user"
-    ADD CONSTRAINT fk_user_supervisor FOREIGN KEY (supervisor_id) REFERENCES "user"(id);
 
 ALTER TABLE user_location
     ADD CONSTRAINT fk_userlocation_location FOREIGN KEY (location_id) REFERENCES location(id),

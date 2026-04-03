@@ -26,6 +26,19 @@ public class UserLocationRole {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
+    protected UserLocationRole() {
+        // Required by JPA.
+    }
+
+    public UserLocationRole(User user, Location location, Role role) {
+        if (user == null || location == null || role == null) {
+            throw new IllegalArgumentException("User, location, and role are required.");
+        }
+        this.user = user;
+        this.location = location;
+        this.role = role;
+    }
+
     public long getId() {
         return id;
     }

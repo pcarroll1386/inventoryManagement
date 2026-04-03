@@ -1,6 +1,6 @@
 # inventoryManagement
 Web App to track and request inventory.
-Will be able to set up users and locations. Admin roles can add items and locations. Supervisor Roles will be able to set up base items for locations assigned to there employees. 
+Will be able to set up users and locations. Admin roles can add items and locations. Manager roles will be able to set up base items for their assigned locations.
 User roles will be able to add inventory to thier location. Submit inventory requests. Set max and min's for items in location. 
 The management program will be able to send inventory requests when inventory is at or below min.
 Warehouse Roles will be able to pull all submitted requests to prepair items for locations and mark them as ready for pick up once the items have been staged.

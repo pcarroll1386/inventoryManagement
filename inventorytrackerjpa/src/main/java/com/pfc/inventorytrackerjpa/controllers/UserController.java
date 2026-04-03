@@ -1,5 +1,7 @@
 package com.pfc.inventorytrackerjpa.controllers;
 
+import com.pfc.inventorytrackerjpa.dto.UserCreateRequest;
+import com.pfc.inventorytrackerjpa.dto.UserUpdateRequest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -8,11 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import com.pfc.inventorytrackerjpa.entities.Role;
 import com.pfc.inventorytrackerjpa.entities.RoleScope;
 import com.pfc.inventorytrackerjpa.entities.User;
-import com.pfc.inventorytrackerjpa.entities.Location;
-import com.pfc.inventorytrackerjpa.repositories.LocationRepository;
 import com.pfc.inventorytrackerjpa.repositories.RoleRepository;
 import com.pfc.inventorytrackerjpa.repositories.UserRepository;
 import com.pfc.inventorytrackerjpa.services.InvalidDataException;
@@ -28,12 +29,9 @@ public class UserController {
 
     private final RoleRepository roleRepo;
 
-    private final LocationRepository locationRepo;
-
-    public UserController(UserRepository userRepo, RoleRepository roleRepo, LocationRepository locationRepo) {
+    public UserController(UserRepository userRepo, RoleRepository roleRepo) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
-        this.locationRepo = locationRepo;
     }
 
     @GetMapping("/getAll")
@@ -48,26 +46,42 @@ public class UserController {
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) throws InvalidRoleException {
-        user.setRoles(resolveAppRoles(user));
-        user.setLocations(resolveLocations(user));
+    public User createUser(@Valid @RequestBody UserCreateRequest request) throws InvalidRoleException {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setName(request.getName());
+        user.setEmployeeIdentification(request.getEmployeeIdentification());
+        user.setEnabled(request.getEnabled() == null || request.getEnabled());
+        user.setRoles(resolveAppRoles(request.getAppRoleIds()));
         return userRepo.save(user);
 
     }
 
-    @PutMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public User editUser(@RequestBody User user) throws InvalidDataException, InvalidRoleException {
-        User current = userRepo.findById(user.getId()).orElse(null);
+    @PatchMapping(value = "/edit/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public User patchUser(@PathVariable("id") long id, @Valid @RequestBody UserUpdateRequest request)
+            throws InvalidDataException, InvalidRoleException {
+        User current = userRepo.findById(id).orElse(null);
         if (current == null) {
             throw new InvalidDataException("Please provide a valid user.");
         }
-        current.setRoles(resolveAppRoles(user));
-        current.setLocations(resolveLocations(user));
-        current.setEmployeeIdentification(user.getEmployeeIdentification());
-        current.setUsername(user.getUsername());
-        current.setEnabled(user.isEnabled());
-        current.setName(user.getName());
-        current.setPassword(user.getPassword());
+
+        if (request.getAppRoleIds() != null) {
+            current.setRoles(resolveAppRoles(request.getAppRoleIds()));
+        }
+        if (request.getEmployeeIdentification() != null) {
+            current.setEmployeeIdentification(request.getEmployeeIdentification());
+        }
+        if (request.getEnabled() != null) {
+            current.setEnabled(request.getEnabled());
+        }
+        if (request.getName() != null) {
+            current.setName(request.getName());
+        }
+        if (request.getPassword() != null) {
+            current.setPassword(request.getPassword());
+        }
+
         return userRepo.save(current);
     }
 
@@ -94,16 +108,16 @@ public class UserController {
         return user.isEnabled();
     }
 
-    private Set<Role> resolveAppRoles(User user) throws InvalidRoleException {
+    private Set<Role> resolveAppRoles(Set<Long> appRoleIds) throws InvalidRoleException {
         Set<Role> roles = new HashSet<>();
-        if (user.getRoles() == null) {
+        if (appRoleIds == null) {
             return roles;
         }
-        for (Role role : user.getRoles()) {
-            if (role == null) {
+        for (Long roleId : appRoleIds) {
+            if (roleId == null) {
                 continue;
             }
-            Role resolvedRole = roleRepo.findById(role.getId())
+            Role resolvedRole = roleRepo.findById(roleId)
                     .orElseThrow(() -> new InvalidRoleException("Invalid role id."));
             if (resolvedRole.getScope() != RoleScope.APP) {
                 throw new InvalidRoleException("Role '" + resolvedRole.getRoleName() + "' is not an app role.");
@@ -111,19 +125,5 @@ public class UserController {
             roles.add(resolvedRole);
         }
         return roles;
-    }
-
-    private Set<Location> resolveLocations(User user) {
-        Set<Location> locations = new HashSet<>();
-        if (user.getLocations() == null) {
-            return locations;
-        }
-        for (Location location : user.getLocations()) {
-            if (location == null) {
-                continue;
-            }
-            locationRepo.findById(location.getId()).ifPresent(locations::add);
-        }
-        return locations;
     }
 }

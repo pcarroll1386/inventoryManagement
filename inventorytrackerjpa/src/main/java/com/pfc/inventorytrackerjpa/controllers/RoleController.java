@@ -41,47 +41,5 @@ public class RoleController {
         return roleRepo.findAllByScope(scope);
     }
     
-    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public Role createRole(@RequestBody Role role) throws InvalidRoleException {
-        validateRole(role);
-        Role savedRole = roleRepo.save(role);
-        if (savedRole == null) {
-            throw new InvalidRoleException("Unable to save role.");
-        }
-        return savedRole;
-    }
-
-    @PutMapping(value = "/edit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Role editRole(@RequestBody Role role) throws InvalidRoleException {
-        Role current = roleRepo.findById(role.getId()).orElse(null);
-        if (current == null) {
-            throw new InvalidRoleException("Please provide a valid role.");
-        }
-        validateRole(role);
-        current.setRoleName(role.getRoleName());
-        current.setScope(role.getScope());
-        return roleRepo.save(current);
-    }
-
-    @PostMapping("/delete/{id}")
-    public boolean deleteRoleById(@PathVariable("id") long id) {
-        Role role = roleRepo.findById(id).orElse(null);
-        if (role != null ){
-            roleRepo.delete(role);
-            return true;
-        }
-        return false;
-    }
-
-    private void validateRole(Role role) throws InvalidRoleException {
-        if (role.getRoleName() == null || role.getRoleName().isBlank()) {
-            throw new InvalidRoleException("Please provide a valid role name.");
-        }
-        if (role.getScope() == null) {
-            throw new InvalidRoleException("Please provide a role scope.");
-        }
-    }
-    
 
 }
