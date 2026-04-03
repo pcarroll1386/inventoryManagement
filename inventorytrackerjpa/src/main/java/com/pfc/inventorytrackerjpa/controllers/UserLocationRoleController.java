@@ -53,7 +53,7 @@ public class UserLocationRoleController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public boolean delete(@PathVariable("id") long id) {
-        return userLocationRoleService.delete(id);
+    public void delete(@PathVariable("id") long id) throws InvalidRoleException {
+        userLocationRoleService.delete(id);
     }
 }

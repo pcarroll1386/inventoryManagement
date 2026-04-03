@@ -55,12 +55,8 @@ class UserLocationRoleServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User();
+        user = new User("jdoe", "secret", "Jane Doe", "E123", true);
         user.setId(1L);
-        user.setUsername("jdoe");
-        user.setName("Jane Doe");
-        user.setPassword("secret");
-        user.setEmployeeIdentification("E123");
 
         location = new Location();
         location.setId(2L);

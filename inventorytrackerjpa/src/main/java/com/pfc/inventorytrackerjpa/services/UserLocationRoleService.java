@@ -87,12 +87,8 @@ public class UserLocationRoleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean delete(long id) {
-        UserLocationRole current = userLocationRoleRepo.findById(id).orElse(null);
-        if (current == null) {
-            return false;
-        }
-
+    public void delete(long id) throws InvalidRoleException {
+        UserLocationRole current = userLocationRoleRepo.findById(id).orElseThrow(() -> new InvalidRoleException("Please provide a valid location role assignment."));
         long userId = current.getUser().getId();
         long locationId = current.getLocation().getId();
         User user = current.getUser();
@@ -104,8 +100,6 @@ public class UserLocationRoleService {
             user.removeLocation(location);
             userRepo.save(user);
         }
-
-        return true;
     }
 
     private User resolveUser(UserLocationRoleRequest request) throws InvalidUserException {

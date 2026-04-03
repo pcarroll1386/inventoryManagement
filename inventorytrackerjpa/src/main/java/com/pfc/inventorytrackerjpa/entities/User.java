@@ -30,13 +30,9 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = true;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+        @ManyToOne(fetch = FetchType.EAGER)
+        @JoinColumn(name = "app_role_id", nullable = false)
+        private Role appRole;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -49,6 +45,18 @@ public class User {
         @JsonIgnore
         @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
         private Set<UserLocationRole> locationRoles = new HashSet<>();
+
+    protected User() {
+        // Required by JPA.
+    }
+
+    public User(String username, String password, String name, String employeeIdentification, boolean enabled) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.employeeIdentification = employeeIdentification;
+        this.enabled = enabled;
+    }
 
     public long getId() {
         return id;
@@ -98,28 +106,12 @@ public class User {
         this.enabled = enabled;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getAppRole() {
+        return appRole;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public void addRole(Role role) {
-        if (role == null) {
-            return;
-        }
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
-    public void removeRole(Role role) {
-        if (role == null) {
-            return;
-        }
-        this.roles.remove(role);
-        role.getUsers().remove(this);
+    public void setAppRole(Role appRole) {
+        this.appRole = appRole;
     }
 
     public Set<Location> getLocations() {

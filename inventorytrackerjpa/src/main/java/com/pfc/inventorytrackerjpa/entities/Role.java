@@ -23,8 +23,8 @@ public class Role {
     private RoleScope scope;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private Set<User> users = new HashSet<>();
+    @OneToMany(mappedBy = "appRole", fetch = FetchType.LAZY)
+    private Set<User> appUsers = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
@@ -54,12 +54,12 @@ public class Role {
         this.scope = scope;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public Set<User> getAppUsers() {
+        return appUsers;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setAppUsers(Set<User> appUsers) {
+        this.appUsers = appUsers;
     }
 
     public Set<UserLocationRole> getUserLocationRoles() {

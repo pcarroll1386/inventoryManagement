@@ -1,21 +1,17 @@
 use inventorymanagementdbtest;
 
-insert into role(`role`)
+insert into role(`role`, scope)
 	values
-    ('ROLE_ADMIN'),
-    ('ROLE_WAREHOUSE'),
-    ('ROLE_USER'),
-    ('ROLE_MANAGER');
+    ('ROLE_ADMIN', 'APP'),
+    ('ROLE_WAREHOUSE', 'APP'),
+    ('ROLE_USER', 'APP'),
+    ('ROLE_MANAGER', 'APP'),
+    ('LOCATION_ADMIN', 'LOCATION'),
+    ('LOCATION_USER', 'LOCATION'),
+    ('LOCATION_VIEWER', 'LOCATION');
     
-insert into `user`(username, `password`, `name`, employeeNumber)
+insert into `user`(username, `password`, `name`, employee_identification, app_role_id, enabled)
 	values
-    ('admin', 'password', 'Admin', 1);
-    
-insert into user_role(username, roleId)
-	values
-    ('admin', 1),
-    ('admin', 2),
-    ('admin', 3),
-    ('admin', 4);
+    ('admin', 'password', 'Admin', '1', 1, true);
     
 update `user` set `password` = '$2a$10$VLtz1k8Dd9LshBFUJnfrLOmu97oqEas8JsmKuWD01VpzokuJ/cPJe' where username = 'admin';

@@ -9,6 +9,7 @@ CREATE TABLE "user"(
     username VARCHAR(255) UNIQUE NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    app_role_id INT NOT NULL,
     employee_identification varchar(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL
 );
@@ -22,12 +23,6 @@ CREATE TABLE "role"(
     id SERIAL PRIMARY KEY,
     "role" VARCHAR(255) UNIQUE NOT NULL,
     scope role_scope NOT NULL
-);
-
-CREATE TABLE user_role(
-    user_id int NOT NULL,
-    role_id INT NOT NULL,
-    PRIMARY KEY(user_id, role_id)
 );
 
 CREATE TABLE location(
@@ -148,9 +143,8 @@ ALTER TABLE user_location_role
     ADD CONSTRAINT fk_userlocationrole_location FOREIGN KEY (location_id) REFERENCES location(id),
     ADD CONSTRAINT fk_userlocationrole_role FOREIGN KEY (role_id) REFERENCES "role"(id);
 
-ALTER TABLE user_role
-    ADD CONSTRAINT fk_userrole_user FOREIGN KEY (user_id) REFERENCES "user"(id),
-    ADD CONSTRAINT fk_userrole_role FOREIGN KEY (role_id) REFERENCES "role"(id);
+ALTER TABLE "user"
+    ADD CONSTRAINT fk_user_approle FOREIGN KEY (app_role_id) REFERENCES "role"(id);
 
 ALTER TABLE request
     ADD CONSTRAINT fk_request_location FOREIGN KEY (location_id) REFERENCES location(id),

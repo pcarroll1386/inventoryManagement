@@ -2,8 +2,7 @@ package com.pfc.inventorytrackerjpa.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.Set;
+import javax.validation.constraints.Positive;
 
 public class UserCreateRequest {
 
@@ -22,8 +21,8 @@ public class UserCreateRequest {
     private Boolean enabled;
 
     @NotNull
-    @Size(min = 1)
-    private Set<Long> appRoleIds;
+    @Positive
+    private Long appRoleId;
 
     public String getUsername() {
         return username;
@@ -65,11 +64,11 @@ public class UserCreateRequest {
         this.enabled = enabled;
     }
 
-    public Set<Long> getAppRoleIds() {
-        return appRoleIds;
+    public Long getAppRoleId() {
+        return appRoleId;
     }
 
-    public void setAppRoleIds(Set<Long> appRoleIds) {
-        this.appRoleIds = appRoleIds;
+    public void setAppRoleId(Long appRoleId) {
+        this.appRoleId = appRoleId;
     }
 }
