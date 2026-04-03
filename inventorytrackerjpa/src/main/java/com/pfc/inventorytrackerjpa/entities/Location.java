@@ -1,10 +1,12 @@
 package com.pfc.inventorytrackerjpa.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 public class Location {
@@ -26,6 +28,10 @@ public class Location {
 
     @Column
     private boolean template;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "locations", fetch = FetchType.LAZY)
+    private Set<User> users = new HashSet<>();
 
     public long getId() {
         return id;
@@ -57,6 +63,14 @@ public class Location {
 
     public void setTemplate(boolean template) {
         this.template = template;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override

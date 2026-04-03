@@ -42,6 +42,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers(HttpMethod.DELETE)
                 .hasRole("ADMIN")
+                .antMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                 .antMatchers("/locations", "/locations/**", "/itemTypes", "/itemTypes/**", "/items", "/items/**", "/categories", "/categories/**", "/locationItems/**").permitAll()
                 .antMatchers("/admin/**")
                 .hasAnyRole("ADMIN")

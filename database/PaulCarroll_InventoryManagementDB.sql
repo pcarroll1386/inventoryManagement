@@ -5,11 +5,12 @@ CREATE DATABASE inventorymanagementdbtest;
 -- After reconnecting to inventorymanagementdbtest, run everything below.
 
 CREATE TABLE "user"(
-    username VARCHAR(255) PRIMARY KEY NOT NULL,
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     supervisor_id VARCHAR(255),
-    employee_number INT NOT NULL,
+    employee_identification varchar(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL
 );
 
@@ -19,9 +20,9 @@ CREATE TABLE "role"(
 );
 
 CREATE TABLE user_role(
-    username VARCHAR(255) NOT NULL,
+    user_id int NOT NULL,
     role_id INT NOT NULL,
-    PRIMARY KEY(username, role_id)
+    PRIMARY KEY(user_id, role_id)
 );
 
 CREATE TABLE location(
@@ -33,8 +34,8 @@ CREATE TABLE location(
 
 CREATE TABLE user_location(
     location_id INT NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    PRIMARY KEY(location_id, username)
+    user_id int NOT NULL,
+    PRIMARY KEY(location_id, user_id)
 );
 
 CREATE TABLE job(
@@ -47,7 +48,7 @@ CREATE TABLE job(
 CREATE TABLE request(
     id SERIAL PRIMARY KEY,
     location_id INT NOT NULL,
-    username VARCHAR(255) NOT NULL,
+    user_id int NOT NULL,
     submit_date TIMESTAMP,
     fill_date TIMESTAMP,
     notes TEXT,
@@ -70,6 +71,22 @@ CREATE TABLE job_item(
     PRIMARY KEY (job_id, item_type_id)
 );
 
+CREATE TYPE volume_measurement AS ENUM (
+    'MILLILITERS',
+    'LITERS',
+    'GRAMS',
+    'KILOGRAMS',
+    'TEASPOONS',
+    'TABLESPOONS',
+    'FLUID_OUNCES',
+    'CUPS',
+    'PINTS',
+    'QUARTS',
+    'GALLONS',
+    'OUNCES',
+    'POUNDS'
+);
+
 CREATE TABLE item(
     id SERIAL PRIMARY KEY,
     location_id INT NOT NULL,
@@ -77,7 +94,11 @@ CREATE TABLE item(
     serial_number VARCHAR(255),
     price DECIMAL(8, 2),
     max INT,
-    min INT
+    min INT,
+    quantity INT,
+    volume_ml DECIMAL(12, 6),
+    volume_measurement volume_measurement,
+    is_bulk BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE request_item(
@@ -106,19 +127,19 @@ ALTER TABLE job_item
     ADD CONSTRAINT fk_jobitem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
 
 ALTER TABLE "user"
-    ADD CONSTRAINT fk_user_supervisor FOREIGN KEY (supervisor_id) REFERENCES "user"(username);
+    ADD CONSTRAINT fk_user_supervisor FOREIGN KEY (supervisor_id) REFERENCES "user"(id);
 
 ALTER TABLE user_location
     ADD CONSTRAINT fk_userlocation_location FOREIGN KEY (location_id) REFERENCES location(id),
-    ADD CONSTRAINT fk_userlocation_user FOREIGN KEY (username) REFERENCES "user"(username);
+    ADD CONSTRAINT fk_userlocation_user FOREIGN KEY (user_id) REFERENCES "user"(id);
 
 ALTER TABLE user_role
-    ADD CONSTRAINT fk_userrole_user FOREIGN KEY (username) REFERENCES "user"(username),
+    ADD CONSTRAINT fk_userrole_user FOREIGN KEY (user_id) REFERENCES "user"(id),
     ADD CONSTRAINT fk_userrole_role FOREIGN KEY (role_id) REFERENCES "role"(id);
 
 ALTER TABLE request
     ADD CONSTRAINT fk_request_location FOREIGN KEY (location_id) REFERENCES location(id),
-    ADD CONSTRAINT fk_request_user FOREIGN KEY (username) REFERENCES "user"(username);
+    ADD CONSTRAINT fk_request_user FOREIGN KEY (user_id) REFERENCES "user"(id);
 
 ALTER TABLE item
     ADD CONSTRAINT fk_item_location FOREIGN KEY (location_id) REFERENCES location(id),
