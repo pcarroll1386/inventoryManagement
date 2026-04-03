@@ -2,44 +2,44 @@ package com.pfc.inventorytrackerjpa.controllers;
 
 import com.pfc.inventorytrackerjpa.entities.RoleScope;
 import com.pfc.inventorytrackerjpa.services.InvalidRoleException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import com.pfc.inventorytrackerjpa.services.RoleService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import com.pfc.inventorytrackerjpa.entities.Role;
-import com.pfc.inventorytrackerjpa.repositories.RoleRepository;
 
 @RestController
 @RequestMapping("/roles")
 public class RoleController {
 
-    private final RoleRepository roleRepo;
+    private final RoleService roleService;
 
-    public RoleController(RoleRepository roleRepo) {
-        this.roleRepo = roleRepo;
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     @GetMapping("/getall")
     public List<Role> getall() {
-        return roleRepo.findAll();
+        return roleService.getAll();
     }
 
     @GetMapping("/getById/{id}")
-    public Role getById(@PathVariable("id") long id){
-        return roleRepo.findById(id).orElse(null);
+    public Role getById(@PathVariable("id") long id) throws InvalidRoleException{
+        return roleService.getById(id);
     }
 
     @GetMapping("/getByRoleName/{roleName}")
-    public Role getByRoleName(@PathVariable("roleName") String roleName) {
-        return roleRepo.findByRoleName(roleName);
+    public Role getByRoleName(@PathVariable("roleName") String roleName) throws InvalidRoleException {
+        return roleService.getByRoleName(roleName);
     }
 
     @GetMapping("/getByScope/{scope}")
     public List<Role> getByScope(@PathVariable("scope") RoleScope scope) {
-        return roleRepo.findAllByScope(scope);
+        return roleService.getByScope(scope);
+
     }
-    
+
 
 }
