@@ -18,17 +18,18 @@ public class ItemType {
     private String name;
 
     @Column
-    private String nickname;
-
-    @Column
     @NotNull
     private String description;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "item_kind", nullable = false)
+        private ItemKind itemKind;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "item_category",
-            joinColumns = @JoinColumn(name = "itemTypeId"),
-            inverseJoinColumns = @JoinColumn(name = "categoryId"))
+            joinColumns = @JoinColumn(name = "item_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories;
 
     public Long getId() {
@@ -47,20 +48,20 @@ public class ItemType {
         this.name = name;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ItemKind getItemKind() {
+        return itemKind;
+    }
+
+    public void setItemKind(ItemKind itemKind) {
+        this.itemKind = itemKind;
     }
 
     public Set<Category> getCategories() {
@@ -78,12 +79,12 @@ public class ItemType {
         ItemType itemType = (ItemType) o;
         return Objects.equals(id, itemType.id)
                 && Objects.equals(name, itemType.name)
-                && Objects.equals(nickname, itemType.nickname)
-                && Objects.equals(description, itemType.description);
+                && Objects.equals(description, itemType.description)
+                && itemKind == itemType.itemKind;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, nickname, description);
+        return Objects.hash(id, name, description, itemKind);
     }
 }

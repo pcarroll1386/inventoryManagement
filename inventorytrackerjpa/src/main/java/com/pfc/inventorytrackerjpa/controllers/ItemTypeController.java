@@ -68,8 +68,8 @@ public class ItemTypeController {
             throw new InvalidItemException("Please provide a valid item type.");
         }
         current.setName(itemType.getName());
-        current.setNickname(itemType.getNickname());
         current.setDescription(itemType.getDescription());
+        current.setItemKind(itemType.getItemKind());
         Set<Category> categories = new HashSet<>();
         if (itemType.getCategories() != null) {
             for (Category c : itemType.getCategories()) {

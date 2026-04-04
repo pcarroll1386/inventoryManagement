@@ -69,7 +69,6 @@ CREATE TABLE request(
 CREATE TABLE item_type(
     id SERIAL PRIMARY KEY,
     "name" VARCHAR(255) NOT NULL,
-    nickname VARCHAR(255),
     "description" VARCHAR(255) NOT NULL
 );
 
@@ -95,18 +94,71 @@ CREATE TYPE volume_measurement AS ENUM (
     'POUNDS'
 );
 
-CREATE TABLE item(
+CREATE TYPE item_kind AS ENUM (
+    'SERIALIZED_ASSET',
+    'PACKAGED_CONSUMABLE',
+    'BULK_CONSUMABLE'
+);
+
+CREATE TYPE serialized_item_status AS ENUM (
+    'AVAILABLE',
+    'IN_USE',
+    'RETIRED',
+    'TRANSFERRED'
+);
+
+ALTER TABLE item_type
+    ADD COLUMN item_kind item_kind NOT NULL;
+
+CREATE INDEX idx_item_type_item_kind_name
+    ON item_type(item_kind, name);
+
+CREATE TABLE location_item_policy(
     id SERIAL PRIMARY KEY,
     location_id INT NOT NULL,
     item_type_id INT NOT NULL,
-    serial_number VARCHAR(255),
-    price DECIMAL(8, 2),
     max INT,
     min INT,
-    quantity INT,
-    volume_ml DECIMAL(12, 6),
-    volume_measurement volume_measurement,
-    is_bulk BOOLEAN NOT NULL DEFAULT FALSE
+    reorder_point INT,
+    reorder_quantity INT,
+    CONSTRAINT uq_location_item_policy UNIQUE (location_id, item_type_id)
+);
+
+CREATE TABLE location_packaged_stock(
+    id SERIAL PRIMARY KEY,
+    location_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    nickname VARCHAR(255),
+    quantity INT NOT NULL,
+    CONSTRAINT uq_location_packaged_stock UNIQUE (location_id, item_type_id),
+    CONSTRAINT ck_location_packaged_stock_quantity_nonnegative CHECK (quantity >= 0)
+);
+
+CREATE TABLE location_bulk_stock(
+    id SERIAL PRIMARY KEY,
+    location_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    nickname VARCHAR(255),
+    volume_ml DECIMAL(12, 6) NOT NULL,
+    volume_measurement volume_measurement NOT NULL,
+    CONSTRAINT uq_location_bulk_stock UNIQUE (location_id, item_type_id),
+    CONSTRAINT ck_location_bulk_stock_volume_nonnegative CHECK (volume_ml >= 0)
+);
+
+CREATE TABLE serialized_item(
+    id SERIAL PRIMARY KEY,
+    location_id INT NOT NULL,
+    item_type_id INT NOT NULL,
+    nickname VARCHAR(255),
+    serial_number VARCHAR(255) NOT NULL,
+    brand VARCHAR(255),
+    model VARCHAR(255),
+    purchase_price DECIMAL(10, 2),
+    status serialized_item_status NOT NULL DEFAULT 'AVAILABLE',
+    purchased_at TIMESTAMP,
+    notes TEXT,
+    CONSTRAINT uq_serialized_item_serial_number UNIQUE (serial_number),
+    CONSTRAINT ck_serialized_item_purchase_price_nonnegative CHECK (purchase_price IS NULL OR purchase_price >= 0)
 );
 
 CREATE TABLE request_item(
@@ -150,9 +202,21 @@ ALTER TABLE request
     ADD CONSTRAINT fk_request_location FOREIGN KEY (location_id) REFERENCES location(id),
     ADD CONSTRAINT fk_request_user FOREIGN KEY (user_id) REFERENCES "user"(id);
 
-ALTER TABLE item
-    ADD CONSTRAINT fk_item_location FOREIGN KEY (location_id) REFERENCES location(id),
-    ADD CONSTRAINT fk_item_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
+ALTER TABLE location_item_policy
+    ADD CONSTRAINT fk_locationitempolicy_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_locationitempolicy_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
+
+ALTER TABLE location_packaged_stock
+    ADD CONSTRAINT fk_locationpackagedstock_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_locationpackagedstock_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
+
+ALTER TABLE location_bulk_stock
+    ADD CONSTRAINT fk_locationbulkstock_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_locationbulkstock_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
+
+ALTER TABLE serialized_item
+    ADD CONSTRAINT fk_serializeditem_location FOREIGN KEY (location_id) REFERENCES location(id),
+    ADD CONSTRAINT fk_serializeditem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id);
 
 ALTER TABLE request_item
     ADD CONSTRAINT fk_requestitem_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id),
@@ -161,3 +225,179 @@ ALTER TABLE request_item
 ALTER TABLE item_category
     ADD CONSTRAINT fk_itemcategory_itemtype FOREIGN KEY (item_type_id) REFERENCES item_type(id),
     ADD CONSTRAINT fk_itemcategory_category FOREIGN KEY (category_id) REFERENCES category(id);
+
+CREATE INDEX idx_location_item_policy_location_item_type
+    ON location_item_policy(location_id, item_type_id);
+
+CREATE INDEX idx_location_packaged_stock_location_item_type
+    ON location_packaged_stock(location_id, item_type_id);
+
+CREATE INDEX idx_location_bulk_stock_location_item_type
+    ON location_bulk_stock(location_id, item_type_id);
+
+CREATE INDEX idx_serialized_item_location_item_type
+    ON serialized_item(location_id, item_type_id);
+
+-- Phase 3.1 unified inventory read model for front-end list rendering
+DROP VIEW IF EXISTS inventory_overview;
+
+CREATE VIEW inventory_overview AS
+SELECT
+    s.location_id,
+    s.item_type_id,
+    it.name AS item_name,
+    it.item_kind,
+    s.quantity,
+    NULL::DECIMAL(12, 6) AS volume_ml,
+    NULL::volume_measurement AS volume_measurement,
+    NULL::VARCHAR(255) AS serial_number,
+    NULL::serialized_item_status AS status
+FROM location_packaged_stock s
+JOIN item_type it ON it.id = s.item_type_id
+
+UNION ALL
+
+SELECT
+    s.location_id,
+    s.item_type_id,
+    it.name AS item_name,
+    it.item_kind,
+    NULL::INT AS quantity,
+    s.volume_ml,
+    s.volume_measurement,
+    NULL::VARCHAR(255) AS serial_number,
+    NULL::serialized_item_status AS status
+FROM location_bulk_stock s
+JOIN item_type it ON it.id = s.item_type_id
+
+UNION ALL
+
+SELECT
+    s.location_id,
+    s.item_type_id,
+    it.name AS item_name,
+    it.item_kind,
+    1 AS quantity,
+    NULL::DECIMAL(12, 6) AS volume_ml,
+    NULL::volume_measurement AS volume_measurement,
+    s.serial_number,
+    s.status
+FROM serialized_item s
+JOIN item_type it ON it.id = s.item_type_id;
+
+-- Phase 3.2 access-scoped read pattern
+-- Query pattern:
+-- 1) Build readable location ids for one user (optionally include app admin global access).
+-- 2) Join readable locations to inventory_overview to return a single unified list.
+--
+-- Sample SQL (read-only template):
+-- WITH readable_locations AS (
+--     SELECT ul.location_id
+--     FROM user_location ul
+--     WHERE ul.user_id = :user_id
+--
+--     UNION
+--
+--     SELECT ulr.location_id
+--     FROM user_location_role ulr
+--     JOIN "role" r ON r.id = ulr.role_id
+--     WHERE ulr.user_id = :user_id
+--       AND r.scope = 'LOCATION'
+--       AND r."role" IN ('LOCATION_VIEWER', 'LOCATION_USER', 'LOCATION_ADMIN')
+--
+--     UNION
+--
+--     SELECT l.id
+--     FROM location l
+--     JOIN "user" u ON u.id = :user_id
+--     JOIN "role" app_r ON app_r.id = u.app_role_id
+--     WHERE app_r.scope = 'APP'
+--       AND app_r."role" = 'ROLE_ADMIN'
+-- )
+-- SELECT
+--     io.location_id,
+--     io.item_type_id,
+--     io.item_name,
+--     io.item_kind,
+--     io.quantity,
+--     io.volume_ml,
+--     io.volume_measurement,
+--     io.serial_number,
+--     io.status
+-- FROM inventory_overview io
+-- JOIN readable_locations rl ON rl.location_id = io.location_id
+-- ORDER BY io.location_id, io.item_name, io.serial_number;
+
+-- Phase 2.4 seed verification queries (read-only)
+
+-- Seeded row counts by table
+SELECT 'role' AS table_name, COUNT(*) AS row_count FROM "role"
+UNION ALL
+SELECT 'user', COUNT(*) FROM "user"
+UNION ALL
+SELECT 'location', COUNT(*) FROM location
+UNION ALL
+SELECT 'item_type', COUNT(*) FROM item_type
+UNION ALL
+SELECT 'category', COUNT(*) FROM category
+UNION ALL
+SELECT 'item_category', COUNT(*) FROM item_category
+UNION ALL
+SELECT 'location_item_policy', COUNT(*) FROM location_item_policy
+UNION ALL
+SELECT 'location_packaged_stock', COUNT(*) FROM location_packaged_stock
+UNION ALL
+SELECT 'location_bulk_stock', COUNT(*) FROM location_bulk_stock
+UNION ALL
+SELECT 'serialized_item', COUNT(*) FROM serialized_item;
+
+-- Ensure each inventory table references matching item_kind
+SELECT
+    'packaged_stock_kind_mismatch' AS check_name,
+    COUNT(*) AS mismatch_count
+FROM location_packaged_stock s
+JOIN item_type it ON it.id = s.item_type_id
+WHERE it.item_kind <> 'PACKAGED_CONSUMABLE'
+UNION ALL
+SELECT
+    'bulk_stock_kind_mismatch' AS check_name,
+    COUNT(*) AS mismatch_count
+FROM location_bulk_stock s
+JOIN item_type it ON it.id = s.item_type_id
+WHERE it.item_kind <> 'BULK_CONSUMABLE'
+UNION ALL
+SELECT
+    'serialized_item_kind_mismatch' AS check_name,
+    COUNT(*) AS mismatch_count
+FROM serialized_item s
+JOIN item_type it ON it.id = s.item_type_id
+WHERE it.item_kind <> 'SERIALIZED_ASSET';
+
+-- Additional integrity checks for serial uniqueness and non-negative values
+SELECT
+    'serialized_item_duplicate_serial_groups' AS check_name,
+    COUNT(*) AS violation_count
+FROM (
+    SELECT serial_number
+    FROM serialized_item
+    GROUP BY serial_number
+    HAVING COUNT(*) > 1
+) dup
+UNION ALL
+SELECT
+    'location_packaged_stock_negative_quantity' AS check_name,
+    COUNT(*) AS violation_count
+FROM location_packaged_stock
+WHERE quantity < 0
+UNION ALL
+SELECT
+    'location_bulk_stock_negative_volume_ml' AS check_name,
+    COUNT(*) AS violation_count
+FROM location_bulk_stock
+WHERE volume_ml < 0
+UNION ALL
+SELECT
+    'serialized_item_negative_purchase_price' AS check_name,
+    COUNT(*) AS violation_count
+FROM serialized_item
+WHERE purchase_price < 0;
